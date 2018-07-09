@@ -33,7 +33,7 @@ get '/' do
 	end
 	
 	if @errors.empty?
-		@dir_paths.map { |e| e.to_s }
+		erb "#{@dir_paths.map { |e| e.to_s }}"
 	else
 		@errors
 	end
