@@ -11,11 +11,14 @@
     <title>OSC HW Submission</title>
   </head>
   <body>
-	<nav class="navbar navbar-dark" style="background-color: #c8102e">
-		<a class="navbar-brand" href="https://ondemand.osc.edu/pun/sys/dashboard/">OSC OnDemand</a>
-	</nav>
-	<div class="container">
-		<nav aria-label="breadcrumb">
+	<header>
+		<nav class="navbar navbar-dark navbar-inverse" style="background-color: #c8102e">
+			<a class="navbar-brand" href="https://ondemand.osc.edu/pun/sys/dashboard/">OSC OnDemand</a>
+		</nav>
+	</header>
+
+	<main class="container">
+		<nav aria-label="breadcrumb" class="mt-5">
 			<ol class="breadcrumb">
 				<li class="breadcrumb-item"><a href="https://ondemand.osc.edu/pun/sys/dashboard/">Home</a></li>
 				<li class="breadcrumb-item"><a href="https://ondemand.osc.edu/pun/sys/dashboard/apps/index">All Apps</a></li>
@@ -23,16 +26,17 @@
 			</ol>	
 		</nav>
 
-    	<h2>Your Classes</h2>
+    	<h2 class="mt-5">Your Classes</h2>
 		<hr>
 		<%= yield %>
-	</div>
+	</main>
 
 	<footer class="footer">
 		<div class="container-fluid">
 			<span class="text-muted">powered by Open OnDemand</span>
 		</div>	
 	</footer>
+
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
