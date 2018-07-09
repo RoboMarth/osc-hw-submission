@@ -39,9 +39,10 @@ get '/' do
 	end
 end
 
-get '/:project' do
-	pn = Pathname.new("/fs/project/#{:project}")
+get '/:project' do | project |
+	pn = Pathname.new("/fs/project/#{project}")
 	halt 403, "Permission denied" unless pn.readable?
+	pn.to_s
 end
 
 get '/download/*' do | glob |
