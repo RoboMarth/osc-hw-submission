@@ -46,7 +46,7 @@ get '/:project' do | project |
 end
 
 get '/download/*' do | glob |
-	pn = Pathname.new("/#{glob}")
+	pn = Pathname.new("/fs/project/#{glob}")
 	halt 404, "File or directory not found" unless pn.exist?
 	halt 403, "Permission denied" unless pn.readable?
 
