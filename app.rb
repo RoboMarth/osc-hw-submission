@@ -40,9 +40,18 @@ get '/' do
 end
 
 get '/:project' do | project |
+	@dir_paths = Array.new
+	@project = project
+
 	pn = Pathname.new("/fs/project/#{project}")
+	halt 404, "File or directory not found" unless pn.exist?
 	halt 403, "Permission denied" unless pn.readable?
-	pn.to_s
+
+	Pathname.glob(pn + "*" + "this_is_a_homework_directory") do | p |
+		@dir_paths.push p.dirname
+	end
+
+	erb :project
 end
 
 get '/download/*' do | glob |

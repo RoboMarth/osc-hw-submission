@@ -3,7 +3,8 @@
 		<li class="breadcrumb-item"><a href="https://ondemand.osc.edu/pun/sys/dashboard/">Home</a></li>
 		<li class="breadcrumb-item"><a href="https://ondemand.osc.edu/pun/sys/dashboard/apps/index">All Apps</a></li>
 		<li class="breadcrumb-item"><a href="<%= url("/") %>">Homework Submission</a></li>
-		<li class="breadcrumb-item active">All Classes</li>
+		<li class="breadcrumb-item"><a href="<%= url("/") %>">All Classes</a></li>
+		<li class="breadcrumb-item active"><%= @project %></li>
 	</ol>	
 </nav>
 
@@ -14,7 +15,7 @@
 
 <div class="table-responsive-xl">
 <table class="table table-hover text-center mt-3">
-	<caption class="text-right">All classes accessible by <%= `whoami` %></caption>
+	<caption class="text-right">All classes under <%= @project %> accessible by <%= `whoami` %></caption>
 	<thead><tr>	
 		<th scope="col" class="text-left">Class Name</th>
 		<th scope="col">Project</th>
@@ -23,7 +24,7 @@
 		<th scope="col">Date Created</th>
 	</thead></tr>
 	<tbody>
-	<% 10.times do %>
+	<% 5.times do %>
 	<tr>
 		<th scope="row" class="text-left"><a href="#">Long name example really long name</a></th>
 		<td><a href="<%= url("/PZS0530") %>">PZS0530</a></td>
