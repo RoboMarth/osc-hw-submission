@@ -9,16 +9,15 @@
 </nav>
 
 <div class="clearfix mt-5">
-	<h2 class="float-left">Your Classes</h2>
+	<h2 class="float-left">Project: <%= @project %> </h2>
 	<button type="button" class="btn btn-primary float-right">Add New Class</button>
 </div>
 
 <div class="table-responsive-xl">
 <table class="table table-hover text-center mt-3">
 	<caption class="text-right">All classes under <%= @project %> accessible by <%= `whoami` %></caption>
-	<thead><tr>	
+	<thead class="thead-dark"><tr>	
 		<th scope="col" class="text-left">Class Name</th>
-		<th scope="col">Project</th>
 		<th scope="col"># of Assignments</th>
 		<th scope="col"># of Submissions</th>
 		<th scope="col">Date Created</th>
@@ -27,7 +26,6 @@
 	<% 5.times do %>
 	<tr>
 		<th scope="row" class="text-left"><a href="<%= url("/PZS0530/mzhan") %>">Long name example really long name</a></th>
-		<td><a href="<%= url("/PZS0530") %>">PZS0530</a></td>
 		<td>3</td>
 		<td>100</td>
 		<td>2018-09-01</td>
