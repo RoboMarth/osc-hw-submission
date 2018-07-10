@@ -1,0 +1,32 @@
+<nav aria-label="breadcrumb" class="mt-5">
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item"><a href="https://ondemand.osc.edu/pun/sys/dashboard/">Home</a></li>
+		<li class="breadcrumb-item"><a href="https://ondemand.osc.edu/pun/sys/dashboard/apps/index">All Apps</a></li>
+		<li class="breadcrumb-item active"><a href="<%= url("/") %>">Homework Submission</a></li>
+	</ol>	
+</nav>
+
+<h2 class="mt-5">Your Classes</h2>
+<div class="table-responsive-xl">
+<table class="table table-hover text-center mt-3">
+	<caption class="text-right">All classes accessible by <%= `whoami` %></caption>
+	<thead><tr>	
+		<th scope="col" class="text-left">Class Name</th>
+		<th scope="col">Project</th>
+		<th scope="col"># of Assignments</th>
+		<th scope="col"># of Submissions</th>
+		<th scope="col">Date Created</th>
+	</thead></tr>
+	<tbody>
+	<% 10.times do %>
+	<tr>
+		<th scope="row" class="text-left"><a href="#">Long name example really long name</a></th>
+		<td>PZS0530</td>
+		<td>3</td>
+		<td>100</td>
+		<td>2018-09-01</td>
+	</tr>
+	<% end %>
+	</tbody>
+</table>
+</div>
