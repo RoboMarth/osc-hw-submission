@@ -23,12 +23,12 @@
 		<th scope="col">Date Created</th>
 	</thead></tr>
 	<tbody>
-	<% 5.times do %>
+	<% @dir_paths.each do | p | %>
 	<tr>
-		<th scope="row" class="text-left"><a href="<%= url("/PZS0530/mzhan") %>">Long name example really long name</a></th>
-		<td>3</td>
-		<td>100</td>
-		<td>2018-09-01</td>
+		<th scope="row" class="text-left"><a href="<%= url("/#{p.dirname.basename}/#{p.basename}") %>"><%= p.basename %></a></th>
+		<td><%= p.children.count - 2%><%# minus 2 because of scripts directory and homework dir file %></td>
+		<td><%= p.children.flat_map {|pc| pc.children if pc.directory?}.compact.count{|x| x.directory?} %></td>
+		<td>2018-09-01<%# get this from data in homework dir file %></td>
 	</tr>
 	<% end %>
 	</tbody>
