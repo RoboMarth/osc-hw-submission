@@ -2,6 +2,40 @@ require 'sinatra'
 require 'open3'
 require 'pathname'
 
+get '/download/*' do | glob |
+	pn = Pathname.new("/fs/project/#{glob}")
+	halt 404, "File or directory not found" unless pn.exist?
+	halt 403, "Permission denied" unless pn.readable?
+
+	if pn.file?
+
+		send_file pn
+
+	elsif pn.directory?
+
+		# relies on cron to cleanup tmp directory/file (trying to delete it here sends empty file)
+		mktemp_cmd = "mktemp --directory --tmpdir='/tmp' download.XXXXXX;"
+ 
+		stdout, stderr, status = Open3.capture3(mktemp_cmd);
+		halt 500, "could not create temporary file for downloading: #{stderr}" unless status.success?
+
+		@tmp_dirpath = Pathname.new(stdout.chomp)
+		tmp_filepath = @tmp_dirpath.join(pn.basename).sub_ext(".zip")
+	
+		zip_cmd = "/usr/bin/zip", "-r", tmp_filepath.to_s, pn.basename.to_s
+		
+		Dir.chdir(pn.dirname.to_s) do	 # prevents saving entire folder path in zip
+			stdout, stderr, status = Open3.capture3(*zip_cmd)
+			halt 500, "could not compress directory: #{stderr}" unless status.success?
+		end
+
+		send_file tmp_filepath.to_s, :filename => tmp_filepath.basename.to_s
+
+	else
+		"Not a file or directory"
+	end
+end	
+
 get '/' do
 	@errors = Array.new # store any errors that occur
 	@dir_paths = Array.new # store paths to found homework directories
@@ -39,9 +73,9 @@ get '/' do
 	end
 end
 
-get '/:project' do | project |
+get '/:project' do
 	@dir_paths = Array.new
-	@project = project
+	@project = params[:project]
 
 	pn = Pathname.new("/fs/project/#{project}")
 	halt 404, "File or directory not found" unless pn.exist?
@@ -54,37 +88,7 @@ get '/:project' do | project |
 	erb :project
 end
 
-get '/download/*' do | glob |
-	pn = Pathname.new("/fs/project/#{glob}")
-	halt 404, "File or directory not found" unless pn.exist?
-	halt 403, "Permission denied" unless pn.readable?
-
-	if pn.file?
-
-		send_file pn
-
-	elsif pn.directory?
-
-		# relies on cron to cleanup tmp directory/file (trying to delete it here sends empty file)
-		mktemp_cmd = "mktemp --directory --tmpdir='/tmp' download.XXXXXX;"
- 
-		stdout, stderr, status = Open3.capture3(mktemp_cmd);
-		halt 500, "could not create temporary file for downloading: #{stderr}" unless status.success?
-
-		@tmp_dirpath = Pathname.new(stdout.chomp)
-		tmp_filepath = @tmp_dirpath.join(pn.basename).sub_ext(".zip")
+get '/:project/:class' do
 	
-		zip_cmd = "/usr/bin/zip", "-r", tmp_filepath.to_s, pn.basename.to_s
-		
-		Dir.chdir(pn.dirname.to_s) do	 # prevents saving entire folder path in zip
-			stdout, stderr, status = Open3.capture3(*zip_cmd)
-			halt 500, "could not compress directory: #{stderr}" unless status.success?
-		end
-
-		send_file tmp_filepath.to_s, :filename => tmp_filepath.basename.to_s
-
-	else
-		"Not a file or directory"
-	end
-end	
-
+	
+end
