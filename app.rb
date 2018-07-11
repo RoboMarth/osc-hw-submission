@@ -36,6 +36,32 @@ get '/download/*' do | glob |
 	end
 end	
 
+post '/' do
+	pn = Pathname.new(params[:parent_dir])
+	
+	halt 404, "Parent directory not found" unless pn.exist?
+	halt 403, "Permission denied" unless pn.writable?
+	halt 400, "Not a directory" unless pn.directory?
+		
+	class_name = params[:class_name]
+	
+	halt 400, "Invalid class name" unless class_name.match /\A\w+$\z/
+	
+	script_pn = Pathname.new("./hw_dir_setup").realpath
+
+	halt 500, "Could not access internal script" unless script_pn.executable? 	
+
+	hw_dir_setup_cmd = "#{script_pn} #{class_name} #{pn.basename}"	
+
+	# create new hw directory under project
+	Dir.chdir(pn.to_s) do
+		stdout, stderr, status = Open3.capture3(hw_dir_setup_cmd)
+		halt 500, "could not create hw directory: #{stdout}" unless status.success?		
+	end
+	
+	redirect to '/'
+end
+
 get '/' do
 	@errors = Array.new # store any errors that occur
 	@dir_paths = Array.new # store paths to found homework directories

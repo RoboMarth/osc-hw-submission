@@ -1,0 +1,293 @@
+#!/bin/bash
+
+# hw_dir_setup
+# creates a directory with sub-directories for each hw assignment ($hw_name), with
+# each subdirectory containing directories for each student submission (dirs named after loginID)
+
+# project file system is NTFS, can use facl?
+
+RM_ME=rm_me_to_lock_assignment # name of file to mark if an assignemnt is open for submission
+IS_HW=this_is_a_homework_directory # a file used by OnDemand app to determine if a directory is a hw directory
+PREFIX="hw_dir_setup:" # prefix listed before error messages / dialogue
+PREFIX2="submit_hw:" # prefix for submit_hw related files
+
+function validate_input {
+	if echo "$1" | grep --regexp="[^[:alnum:]_$2]"; then
+		echo "$PREFIX invalid input $1"
+		exit 1
+	fi
+}
+
+function usage {
+	echo 'Usage: ./hw_dir_setup [class_name] [project]'
+	echo '  e.g. ./hw_dir_setup CSE_2221_SW1 PZS0530'
+	exit 1
+}
+
+
+if [ -z "$1" ] || [ "$1" == "/" ] || [ -z "$2" ] || [ "$#" != "2" ]; then
+	usage
+fi
+
+hw_dir="$(pwd)/$1"
+project_group="$2"
+
+validate_input $hw_dir "/"
+validate_input $project_group
+
+if [ -e "$hw_dir" ]; then
+	echo "$PREFIX file or directory with the name '$1' already exists here"
+	exit 1
+fi
+
+if ! groups $(whoami) | grep --quiet --word-regexp "$project_group"; then
+	echo "$PREFIX you are not a member of the group '$project_group'"
+	exit 1
+fi 
+
+# re-executes script as project group to ensure sgid file is created with correct ownership
+if [ "$(id -gn)" != "$project_group" ]; then
+	exec sg "$project_group" "${BASH_SOURCE[0]} $1 $2"
+fi
+
+umask 0077 # makes sure scripts can't be edited before chmod commands
+
+mkdir "$hw_dir" --mode=750 || exit 1
+cd "$hw_dir" || exit 1 # ensures files are created in correct directory
+touch $IS_HW # used by OnDemand app to determine if a directory is a hw directory
+
+mkdir "$hw_dir/scripts" --mode=750 || exit 1 # exits if insufficient permissions
+cd "$hw_dir/scripts" || exit 1 # ensures files are created in correct directory
+
+# used by prof to add assignment
+# second parameter used for setting a due date on supported systems
+cat <<- _EOF_ > add_assignment
+	#!/bin/bash
+
+	hw_name="\$1"
+	due_date="\$2"
+
+	# need execute perms to check if assignment is open, may not be same group here
+	mkdir "$hw_dir/\$hw_name" --mode=711 || exit 1 
+	touch "$hw_dir/\$hw_name/$RM_ME"
+
+	echo "add_assignment: assignment \$hw_name successfully created and is open to submission"
+	echo -e "\nPlease have your students use '$hw_dir/scripts/submit_hw \$hw_name'"
+	echo -e "to submit their homework for this assignment.\n"
+
+	if [ -n "$due_date" ]; then
+		echo "add_assignment: attempting to set auto-lock at due date ..."
+		at "\$due_date" <<< "rm \\"$hw_dir/\$hw_name/$RM_ME\\""
+	fi
+_EOF_
+
+# used by prof to lock assignment for submissions manually
+cat <<- _EOF_ > lock_assignment
+	#!/bin/bash
+
+	hw_name="\$1"
+
+	cd "$hw_dir"
+
+	# checks for existence of assignment
+	if [ ! -d "\$hw_name" ]; then
+		echo "lock_assignment: this assignment does not exist\; exiting with no changes made ..."
+		exit 1
+	fi
+
+	# closes assignment
+	rm "$hw_dir/\$hw_name/$RM_ME"
+	echo lock_assignment: assignment successfully locked and will recieve no further submissions
+_EOF_
+
+# used by prof to unlock assignment for submissions after locking
+cat <<- _EOF_ > unlock_assignment
+	#!/bin/bash
+
+	hw_name="\$1"
+
+	cd "$hw_dir"
+
+	# checks for existence of assignment
+	if [ ! -d "\$hw_name" ]; then
+		echo unlock_assignment: this assignment does not exist\; exiting with no changes made ...
+		exit 1
+	fi
+
+	# unlocks assignment
+	touch "$hw_dir/\$hw_name/$RM_ME"
+	echo unlock_assignment: assignment successfully unlocked and is open for submissions
+_EOF_
+# TODO: make this one program with options for lock/unlock/ and temporal unlock
+
+# used by students to submit homework
+# must cd into directory with hw files
+# can use ls in class dir to see assignments
+# wrapper for setuid file, uses chmod to temporarily allow access to prof (ideally would use acl if avail)
+cat <<- _EOF_ > submit_hw
+	#!/bin/bash
+
+	function usage {
+		echo 'Usage: $hw_dir/scripts/submit_hw [hw_name]'
+		echo '  e.g. $hw_dir/scripts/submit_hw Homework1'
+		exit 1
+	}
+
+	if ! groups \$(whoami) | grep --quiet --word-regexp "$project_group"; then
+		echo "$PREFIX2 cannot submit: You are not in the group for this class"
+		exit 1
+	fi
+
+	if [ -z "\$1" ] || [ "\$#" -ne 1 ]; then
+		usage
+	fi
+
+	hw_name="\$1"
+	src_dir="\$(pwd)" # student's directory containing hw to be submitted
+
+	cd "$hw_dir"
+
+	if [ "\$hw_name" == "scripts" ]; then
+		echo "$PREFIX2 please not attempt to submit into the scripts folder: Not an assignment"
+		exit 1
+	fi
+
+	# checks for existence of assignment
+	if [ ! -d "\$hw_name" ]; then
+		echo "$PREFIX2 cannot submit '\$hw_name': Assignment does not exist"
+		echo To see a list of assignments, try the following command: 'ls $hw_dir'
+		exit 1
+	fi
+
+	# checks if assignment is still available for submission
+	if [ ! -f "\$hw_name/$RM_ME" ]; then
+		echo "$PREFIX2 cannot submit '\$hw_name': Assignment has been locked by your instructor"
+		exit 1
+	fi
+
+	# checks if student owns directory
+	if [ ! -O "\$src_dir" ]; then
+		echo "$PREFIX2 cannot submit from '\$src_dir': You do not own this directory"
+		exit 1
+	fi
+
+	echo -e "\nThis will submit all files and directories under '\$src_dir'."
+	echo "In addition, file permissions and group ownership may be changed to ensure that your"
+	echo "professor can access your files. (To change the submission directory, enter n, cd into"
+	echo -n "the appropriate directory, then run this script again.) Continue? (y/n): "
+
+	read yn
+	echo ""
+
+	if [ "\$yn" == "y" ]; then
+		ls -l --human-readable --almost-all "\$src_dir"
+		echo -ne "\nThe above files/directories will be submitted. Continue? (y/n): "
+	else
+		echo "$PREFIX2 homework not submitted: Operation cancelled"
+		exit 1
+	fi
+
+	read yn
+	echo ""
+
+	if [ "\$yn" == "y" ]; then
+
+		# changes the file group permissions so that prof (as suid and sgid) has access
+		# TODO: find a way to give only prof temp access without rest of group having temp access
+		chmod 750 "\$src_dir"
+		find -type d -exec chmod g+rx '{}' \; > /dev/null 2>&1
+		chmod --recursive g+r "\$src_dir" > /dev/null 2>&1
+		chown --recursive :$project_group "\$src_dir" > /dev/null 2>&1
+
+		# calls suid script to copy files
+		if $hw_dir/scripts/submit_hw_helper "\$hw_name" "\$src_dir"; then
+			echo -e "$PREFIX2 homework successfully submitted: Process complete"
+		fi
+
+		# re-secures src_dir
+		chmod 700 "\$src_dir"
+	else
+		echo "$PREFIX2 homework not submitted: Operation cancelled"
+		exit 1
+	fi
+_EOF_
+
+# setuid file, wrapper for bash
+# can be called directly, not recommened because not guaranteed to work with arbitrary file perms
+cat <<- _EOF_ > submit_hw_copy_wrapper.c
+	#include <stdio.h>
+	#include <unistd.h>
+	#include <sys/types.h>
+	#include <pwd.h>
+
+	int main (int argc, char *argv[])
+	{
+		char *hw = argv[1];
+		char *src = argv[2];
+		uid_t id = getuid();
+		struct passwd *pwd;
+		pwd = getpwuid(id);
+		if (pwd)
+		{
+			execl("/bin/bash", "bash", "-p", "$hw_dir/scripts/submit_hw_copy", pwd->pw_name, hw, src, (char *) NULL);
+			/* Will only proceed if execl fails */
+			perror("$PREFIX2 homework not submitted: Function execl() in wrapper failed");
+			return 1;
+		}
+		else
+		{
+			perror("$PREFIX2 homework not submitted: Failed to get username from database");
+			return 1;
+		}
+	}
+_EOF_
+
+cat <<- _EOF_ > submit_hw_copy
+	src_dir="\$3"
+	dest_dir="$hw_dir/\$2/\$1"
+
+	# checks if student owns directory
+	if [ ! \$(stat --format=%U "\$src_dir") == "\$1" ]; then
+		echo "$PREFIX2 cannot submit from '\$src_dir': You do not own this directory"
+		exit 1
+	fi
+
+	# checks if professor can access directory
+	if ! cd \$src_dir; then
+		echo "PREFIX2 cannot submit from '\$src_dir': Directory path does not have group execute permissions"
+	fi
+
+	# check if submission already exists
+	if [ -e "\$dest_dir" ]; then
+		echo "$PREFIX2 removing previous submission ..."
+		if ! rm --force --recursive "\$dest_dir"; then
+			echo "$PREFIX2 homework not submitted: Failed to remove previous submission"
+			exit 1
+		fi
+	fi
+
+	# copy files
+	umask 0077 # ensures no one can access files in destination while being copied
+	echo "$PREFIX2 copying the following files:"
+	if ! cp --no-clobber --recursive --no-target-directory --no-dereference --verbose "\$src_dir" "\$dest_dir"; then
+		echo "$PREFIX2 homework NOT successfully submitted: Failed to copy all files"
+		echo "Please make sure the files you are submitting are accessible to group $project_group."
+		exit 1
+	fi
+
+	exit 0
+_EOF_
+
+gcc submit_hw_copy_wrapper.c -o submit_hw_helper
+rm submit_hw_copy_wrapper.c
+
+chmod 700 add_assignment
+chmod 700 lock_assignment
+chmod 700 unlock_assignment
+chmod 6550 submit_hw_helper
+chmod 500 submit_hw_copy
+chmod 750 submit_hw
+
+echo "$PREFIX The directory at '$hw_dir' has been successfully setup."
+echo -e "\nPlease use '$hw_dir/scripts/add_assignment [hw_name]'
+to create your first homework assignment.\n"
