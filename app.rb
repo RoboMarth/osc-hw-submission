@@ -51,16 +51,16 @@ get '/' do
 	groups = stdout_str.chomp.split
 	
 	# look for project directories under /fs/project/
-	project_paths = Array.new
+	@project_paths = Array.new
 	groups.each do | g |
 		path = Pathname.new("/fs/project").join(g)
-		project_paths.push path if path.directory?
+		@project_paths.push path if path.directory?
 	end
 		
-	@errors.push "user does have access to any project directories" if project_paths.empty?
+	@errors.push "user does have access to any project directories" if @project_paths.empty?
 
 	# look for hw directories in the project directories
-	project_paths.each do | p |
+	@project_paths.each do | p |
 		Pathname.glob(p + "*" + "this_is_a_homework_directory") do | p2 |
 			@dir_paths.push p2.dirname
 		end
