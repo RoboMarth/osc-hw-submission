@@ -7,7 +7,7 @@
 # project file system is NTFS, can use facl?
 
 RM_ME=rm_me_to_lock_assignment # name of file to mark if an assignemnt is open for submission
-IS_HW=this_is_a_homework_directory # a file used by OnDemand app to determine if a directory is a hw directory
+IS_HW=this_is_a_homework_directory # a file used by OnDemand app to determine if a directory is a hw directory, also indicates directory creation date
 PREFIX="hw_dir_setup:" # prefix listed before error messages / dialogue
 PREFIX2="submit_hw:" # prefix for submit_hw related files
 

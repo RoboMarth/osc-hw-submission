@@ -36,6 +36,7 @@ get '/download/*' do | glob |
 	end
 end	
 
+# TODO: use better route name and redirect back with session containing errors
 post '/' do
 	pn = Pathname.new(params[:parent_dir])
 	
@@ -88,9 +89,11 @@ get '/' do
 	# look for hw directories in the project directories
 	@project_paths.each do | p |
 		Pathname.glob(p + "*" + "this_is_a_homework_directory") do | p2 |
-			@dir_paths.push p2.dirname
+			@dir_paths.push p2.dirname if p2.file?
 		end
 	end
+
+	@dir_paths = @dir_paths.sort_by{|p| (p + "this_is_a_homework_directory").mtime}.reverse!
 	
 	if @errors.empty?
 		erb :index
@@ -110,6 +113,8 @@ get '/:project' do
 	Pathname.glob(pn + "*" + "this_is_a_homework_directory") do | p |
 		@dir_paths.push p.dirname
 	end
+
+	@dir_paths = @dir_paths.sort_by{|p| (p + "this_is_a_homework_directory").mtime}.reverse!
 
 	erb :project
 end
