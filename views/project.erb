@@ -3,7 +3,7 @@
 		<li class="breadcrumb-item"><a href="https://ondemand.osc.edu/pun/sys/dashboard/">Home</a></li>
 		<li class="breadcrumb-item"><a href="https://ondemand.osc.edu/pun/sys/dashboard/apps/index">All Apps</a></li>
 		<li class="breadcrumb-item"><a href="<%= url("/") %>">Homework Submission</a></li>
-		<li class="breadcrumb-item"><a href="<%= url("/") %>">All Classes</a></li>
+		<li class="breadcrumb-item"><a href="<%= url("/all") %>">All Classes</a></li>
 		<li class="breadcrumb-item active"><%= @project %></li>
 	</ol>	
 </nav>
@@ -23,12 +23,12 @@
 		<th scope="col">Date Created</th>
 	</thead></tr>
 	<tbody>
-	<% @dir_paths.each do | p | %>
+	<% @table_rows.each do | c | %>
 	<tr>
-		<th scope="row" class="text-left"><a href="<%= url("/#{p.dirname.basename}/#{p.basename}") %>"><%= p.basename %></a></th>
-		<td><%= p.children.count - 2%><%# minus 2 because of scripts directory and homework dir file %></td>
-		<td><%= p.children.flat_map {|pc| pc.children if pc.directory?}.compact.count{|x| x.directory?} %></td>
-		<td><%= (p + "this_is_a_homework_directory").mtime.strftime("%F") %><%# get this from homework dir file %></td>
+		<th scope="row" class="text-left"><a href="<%= url("/all/#{c.project}/#{c.name}") %>"><%= c.name %></a></th>
+		<td><%= c.assignments %></td>
+		<td><%= c.submissions %></td>
+		<td><%= c.date_created.strftime("%F") %></td>
 	</tr>
 	<% end %>
 	</tbody>
