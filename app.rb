@@ -149,21 +149,21 @@ post '/add/class' do
 		
 	class_name = params[:class_name]
 
-	redirect_back_with_msg("danger", "Invalid class name") unless class_name.match /\A\w+$\z/
+	redirect_back_with_msg("danger", "Invalid class name: '#{class_name}'") unless class_name.match /\A\w+$\z/
 	
-	script_pn = Pathname.new("./hw_dir_setup").realpath
+	script_pn = Pathname.new(".").realpath.join("hw_dir_setup")
 
-	redirect_back_with_msg("danger", "Internal error: could not access script") unless script_pn.executable?
+	redirect_back_with_msg("danger", "Internal error: could not access script") unless script_pn.exist?
 
 	hw_dir_setup_cmd = "#{script_pn} #{class_name} #{pn.basename}"	
 
 	# create new hw directory under project
 	Dir.chdir(pn.to_s) do
 		stdout, stderr, status = Open3.capture3(hw_dir_setup_cmd)
-		redirect_back_with_msg("warning", "could not add class: #{stdout}") unless status.success?		
+		redirect_back_with_msg("warning", "Could not add class: #{stdout}") unless status.success?		
 	end
 	
-	redirect_back_with_msg("success", "#{class_name} successfully created")
+	redirect_back_with_msg("success", "Class Added: directory for #{class_name} successfully created")
 end
 
 post '/add/assignment' do
