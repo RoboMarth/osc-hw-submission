@@ -24,10 +24,15 @@ AssignmentInfo = Struct.new(:name, :submissions, :date_due)
 Message = Struct.new(:type, :text) # type corresponds to bootstrap theme colors: success, danger, warning, info
 
 helpers do
-	def redirect_back_with_msgs(messages)
-		session[:msgs] = messages
+	def redirect_back_with_msg(type, text)
+		session[:msgs] = Message.new(type, text)
 		redirect back	
 	end
+end
+
+before '/all*' do
+	@msgs = Array.new # store any Messages that need to be displayed (i.e errors)
+	@msgs.push session.delete(:msgs) unless session[:msgs].nil?	
 end
 
 get '/' do
@@ -36,12 +41,11 @@ end
 
 get '/all' do
 	@table_rows = Array.new # store ClassInfo objects
-	@msgs = session[:msgs] # store any Messages that need to be displayed (i.e errors)
 	@project_paths = Array.new
 
 	# get groups
 	stdout_str, stderr_str, status = Open3.capture3("groups")
-	@msg.push Message.new("danger", "could not identify user's groups (groups)") unless status.success?
+	@msgs.push Message.new("danger", "could not identify user's groups (groups)") unless status.success?
 	groups = stdout_str.chomp.split
 	
 	# look for project directories under /fs/project/
@@ -131,6 +135,7 @@ get '/download/*' do | glob |
 end	
 
 post '/add/class' do
+	msgs = Array.new
 	pn = Pathname.new(params[:parent_dir])
 	
 	halt 404, "Parent directory not found" unless pn.exist?
@@ -138,22 +143,22 @@ post '/add/class' do
 	halt 400, "Not a directory" unless pn.directory?
 		
 	class_name = params[:class_name]
-	
-	halt 400, "Invalid class name" unless class_name.match /\A\w+$\z/
+
+	redirect_back_with_msg("danger", "Invalid class name") unless class_name.match /\A\w+$\z/
 	
 	script_pn = Pathname.new("./hw_dir_setup").realpath
 
-	halt 500, "Could not access internal script" unless script_pn.executable? 	
+	redirect_back_with_msg("danger", "Internal error: could not access script") unless script_pn.executable?
 
 	hw_dir_setup_cmd = "#{script_pn} #{class_name} #{pn.basename}"	
 
 	# create new hw directory under project
 	Dir.chdir(pn.to_s) do
 		stdout, stderr, status = Open3.capture3(hw_dir_setup_cmd)
-		halt 500, "could not create hw directory: #{stdout}" unless status.success?		
+		redirect_back_with_msg("warning", "could not add class: #{stdout}") unless status.success?		
 	end
 	
-	redirect back
+	redirect_back_with_msg("success", "#{class_name} successfully created")
 end
 
 post '/add/assignment' do

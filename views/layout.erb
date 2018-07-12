@@ -19,7 +19,7 @@
 	</header>
 
 	<main class="container">
-		<nav aria-label="breadcrumb" class="mt-5">
+		<nav aria-label="breadcrumb" class="mt-5 mb-4">
 			<ol class="breadcrumb">
 				<li class="breadcrumb-item"><a href="https://ondemand.osc.edu/pun/sys/dashboard/">Home</a></li>
 				<li class="breadcrumb-item"><a href="https://ondemand.osc.edu/pun/sys/dashboard/apps/index">All Apps</a></li>
@@ -37,6 +37,14 @@
 				<% end %>
 			</ol>	
 		</nav>
+		<% @msgs.each do | m | %>
+			<div class="alert alert-<%= m.type %> alert-dismissible fade show" role="alert">				
+				<%= m.text %>
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+		<% end %>
 
 		<%= yield %>
 	</main>
