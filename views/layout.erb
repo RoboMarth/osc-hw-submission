@@ -19,6 +19,25 @@
 	</header>
 
 	<main class="container">
+		<nav aria-label="breadcrumb" class="mt-5">
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item"><a href="https://ondemand.osc.edu/pun/sys/dashboard/">Home</a></li>
+				<li class="breadcrumb-item"><a href="https://ondemand.osc.edu/pun/sys/dashboard/apps/index">All Apps</a></li>
+				<li class="breadcrumb-item"><a href="<%= url("/") %>">Homework Submission</a></li>
+				<%# definitely a better way to this but I'm lazy %>
+				<% if @class %>	
+					<li class="breadcrumb-item"><a href="<%= url("/all") %>">All Classes</a></li>
+					<li class="breadcrumb-item"><a href="<%= url("/all/#{@project}") %>"><%= @project %></a></li>
+					<li class="breadcrumb-item active"><%= @class %></li>
+				<% elsif @project %>
+					<li class="breadcrumb-item"><a href="<%= url("/all") %>">All Classes</a></li>
+					<li class="breadcrumb-item active"><%= @project %></li>
+				<% else %>
+					<li class="breadcrumb-item active">All Classes</li>
+				<% end %>
+			</ol>	
+		</nav>
+
 		<%= yield %>
 	</main>
 
