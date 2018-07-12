@@ -12,7 +12,7 @@ ClassInfo = Struct.new(:name, :project, :instructor, :assignments, :submissions,
 	def initialize (hw_dir_path)
 		self[:name] = hw_dir_path.basename.to_s
 		self[:project] = hw_dir_path.dirname.basename.to_s
-		self[:instructor] = Etc.getpwuid(hw_dir_path.stat.uid).name
+		self[:instructor] = `getent passwd #{hw_dir_path.stat.uid} | cut -d ':' -f 5`
 		self[:assignments] = hw_dir_path.children.count - 2 # minus 2 because of scripts directory and homework dir file 
 		self[:submissions] = hw_dir_path.children.flat_map {|pc| pc.children if pc.directory?}.compact.count{|x| x.directory?} 
 		self[:date_created] = (hw_dir_path + IDENTIFICATION_FILE).mtime
