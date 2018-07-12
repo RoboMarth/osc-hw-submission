@@ -24,14 +24,16 @@
 	<caption class="text-right">All classes under <%= @project %> accessible by <%= `whoami` %></caption>
 	<thead class="thead-dark"><tr>	
 		<th scope="col" class="text-left">Class Name</th>
-		<th scope="col"># of Assignments</th>
-		<th scope="col"># of Submissions</th>
+		<th scope="col">Instructor</th>
+		<th scope="col">Assignments</th>
+		<th scope="col">Submissions</th>
 		<th scope="col">Date Created</th>
 	</thead></tr>
 	<tbody>
 	<% @table_rows.each do | c | %>
 	<tr>
 		<th scope="row" class="text-left"><a href="<%= url("/all/#{c.project}/#{c.name}") %>"><%= c.name %></a></th>
+		<td><%= c.instructor %></td>
 		<td><%= c.assignments %></td>
 		<td><%= c.submissions %></td>
 		<td><%= c.date_created.strftime("%F") %></td>
