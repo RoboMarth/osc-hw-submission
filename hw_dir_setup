@@ -75,7 +75,7 @@ cat <<- _EOF_ > add_assignment
 	echo -e "\nPlease have your students use '$hw_dir/scripts/submit_hw \$hw_name'"
 	echo -e "to submit their homework for this assignment.\n"
 
-	if [ -n "$due_date" ]; then
+	if [ -n "\$due_date" ]; then
 		echo "add_assignment: attempting to set auto-lock at due date ..."
 		at "\$due_date" <<< "rm \\"$hw_dir/\$hw_name/$RM_ME\\""
 	fi
