@@ -69,11 +69,11 @@ get '/all/:project' do
 	@table_rows = Array.new
 	@project = params[:project]
 
-	pn = Pathname.new(PROJECTS_DIR).join(@project)
-	halt 404, "File or directory not found" unless pn.exist?
-	halt 403, "Permission denied" unless pn.readable?
+	@project_path = Pathname.new(PROJECTS_DIR).join(@project)
+	halt 404, "File or directory not found" unless @project_path.exist?
+	halt 403, "Permission denied" unless @project_path.readable?
 
-	Pathname.glob(pn + "*" + IDENTIFICATION_FILE) do | p |
+	Pathname.glob(@project_path + "*" + IDENTIFICATION_FILE) do | p |
 		hw_dir_path = p.dirname
 		@table_rows.push ClassInfo.new(hw_dir_path)
 	end
