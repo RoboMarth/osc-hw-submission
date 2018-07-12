@@ -19,7 +19,12 @@ ClassInfo = Struct.new(:name, :project, :instructor, :assignments, :submissions,
 	end
 end
 
-AssignmentInfo = Struct.new(:name, :submissions, :date_due)
+AssignmentInfo = Struct.new(:name, :submissions, :date_due) do
+	def initialize (dir_path)
+		self[:name] = dir_path.basename.to_s
+		self[:submissions] = dir_path.children.count{|x| x.directory?}
+	end
+end
 
 Message = Struct.new(:type, :text) # type corresponds to bootstrap theme colors: success, danger, warning, info
 
