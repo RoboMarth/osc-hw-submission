@@ -8,6 +8,7 @@
 	<caption class="text-right">All homework assignments for <%= @class %></caption>
 	<thead class="thead-dark"><tr>	
 		<th scope="col" class="text-left">Assignment Name</th>
+		<th scope="col">Status</th>
 		<th scope="col">Submissions</th>
 		<th scope="col">Date Created</th>
 		<th scope="col">Date and Time Due</th>
@@ -16,6 +17,7 @@
 	<% @table_rows.each do | a | %>
 	<tr>
 		<th scope="row" class="text-left"><a href="<%= url("#") %>"><%= a.name %></a></th>
+		<td><%= a.open? ? '<span class="text-success">Open</span>' : '<span class="text-danger">Locked</span>' %></td>
 		<td><%= a.submissions.count %></td>
 		<td><%= a.date_created.strftime("%F") %></td>
 		<td><%= a.date_due.nil? ? "<span class=\"text-muted\">None</span>" : a.date_due.strftime("%F at %I:%M %p") %></td>

@@ -9,6 +9,7 @@ enable :sessions
 IDENTIFICATION_FILE = "this_is_a_homework_directory" # file found in HW directories to identify them as such
 PROJECTS_DIR = "/fs/project/" # directory contataining all project folders
 DATE_FILE = "meta_date_a" # file found in each assignment directory, contains creation and due dates, also serves as identification
+ASSIGNMENT_OPEN_FILE = "rm_me_to_lock_assignment" # file found in assignment directory if assignment is open for submission
 
 ClassInfo = Struct.new(:name, :project, :instructor, :assignments, :submissions, :date_created) do
 	def initialize (hw_dir_path)
@@ -21,13 +22,14 @@ ClassInfo = Struct.new(:name, :project, :instructor, :assignments, :submissions,
 	end
 end
 
-AssignmentInfo = Struct.new(:name, :submissions,:date_created, :date_due) do
+AssignmentInfo = Struct.new(:name, :open?, :submissions, :date_created, :date_due) do
 	def initialize (dir_path)
 		self[:name] = dir_path.basename.to_s
 		self[:submissions] = dir_path.children.select{|x| x.directory?}	
 		line1, line2 = IO.readlines((dir_path + DATE_FILE).to_s, chomp: true)
 		self[:date_created] = DateTime.parse(line1.split("Created: ").last)
 		self[:date_due] = DateTime.parse(line2.split("Due: ").last) rescue nil # if date is not valid
+		self[:open?] = (dir_path + ASSIGNMENT_OPEN_FILE).exist? 
 	end
 end
 
