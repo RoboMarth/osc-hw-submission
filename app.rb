@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'open3'
+require 'date'
 require 'pathname'
 require 'etc'
 
@@ -7,6 +8,7 @@ enable :sessions
 
 IDENTIFICATION_FILE = "this_is_a_homework_directory" # file found in HW directories to identify them as such
 PROJECTS_DIR = "/fs/project/" # directory contataining all project folders
+DATE_FILE = "meta_date_a" # file found in each assignment directory, contains creation and due dates, also serves as identification
 
 ClassInfo = Struct.new(:name, :project, :instructor, :assignments, :submissions, :date_created) do
 	def initialize (hw_dir_path)
@@ -19,10 +21,13 @@ ClassInfo = Struct.new(:name, :project, :instructor, :assignments, :submissions,
 	end
 end
 
-AssignmentInfo = Struct.new(:name, :submissions, :date_due) do
+AssignmentInfo = Struct.new(:name, :submissions,:date_created, :date_due) do
 	def initialize (dir_path)
 		self[:name] = dir_path.basename.to_s
-		self[:submissions] = dir_path.children.count{|x| x.directory?}
+		self[:submissions] = dir_path.children.count{|x| x.directory?}	
+		line1, line2 = IO.readlines((dir_path + DATE_FILE).to_s, chomp: true)
+		self[:date_created] = DateTime.parse(line1.split("Created: ").last)
+		self[:date_due] = DateTime.parse(line2.split("Due: ").last) rescue nil # if date is not valid
 	end
 end
 
@@ -93,14 +98,21 @@ get '/all/:project' do
 end
 
 get '/all/:project/:class' do
-	@dir_paths = Array.new # paths to hw submissions (e.g. /fs/project/PZS0530/some_class/osc0001)
+	@table_rows = Array.new # paths to hw submissions (e.g. /fs/project/PZS0530/some_class/osc0001)
 	@project = params[:project]
 	@class = params[:class]
 
-	pn = Pathname.new(PROJECTS_DIR).join(@project).join(@class)
-	halt 404, "File or directory not found" unless pn.exist?
-	halt 403, "Permission denied" unless pn.readable?
-	halt 401, "Not a homework directory" unless (pn + IDENTIFICATION_FILE).exist?
+	class_path = Pathname.new(PROJECTS_DIR).join(@project).join(@class)
+	halt 404, "File or directory not found" unless class_path.exist?
+	halt 403, "Permission denied" unless class_path.readable?
+	halt 401, "Not a homework directory" unless (class_path + IDENTIFICATION_FILE).exist?
+
+	Pathname.glob(class_path + "*" + DATE_FILE) do | p |
+		assign_path = p.dirname	
+		@table_rows.push AssignmentInfo.new(assign_path)
+	end	
+	
+	@table_rows = @table_rows.sort_by{|c| c.date_created}.reverse!
 
 	erb :class	
 end

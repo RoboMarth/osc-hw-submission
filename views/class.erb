@@ -10,16 +10,16 @@
 		<th scope="col" class="text-left">Assignment Name</th>
 		<th scope="col">Submissions</th>
 		<th scope="col">Date Created</th>
-		<th scope="col">Date Due</th>
+		<th scope="col">Date and Time Due</th>
 	</thead></tr>
 	<tbody>
-	<% 5.times do %>
+	<% @table_rows.each do | a | %>
 	<tr>
-		<th scope="row" class="text-left"><a href="<%= url("/PZS0530/mzhan") %>">Long name example really long name</a></th>
-		<td>3</td>
-		<td>2018-09-01</td>
-		<td>2018-09-08</td>
-	</tr>
+		<th scope="row" class="text-left"><a href="<%= url("#") %>"><%= a.name %></a></th>
+		<td><%= a.submissions %></td>
+		<td><%= a.date_created.strftime("%F") %></td>
+		<td><%= a.date_due.nil? ? "<span class=\"text-muted\">None</span>" : a.date_due.strftime("%F at %I:%M %p") %></td>
+	</tr>	
 	<% end %>
 	</tbody>
 </table>
