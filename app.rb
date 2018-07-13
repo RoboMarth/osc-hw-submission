@@ -154,19 +154,15 @@ get '/download/*' do | glob |
 end	
 
 post '/add/class' do
-	msgs = Array.new
-	pn = Pathname.new(params[:parent_dir])
-	
+	pn = Pathname.new(params[:parent_dir])	
+	class_name = params[:class_name]
+	script_pn = Pathname.new(".").realpath.join("hw_dir_setup")
+
 	halt 404, "Parent directory not found" unless pn.exist?
 	halt 403, "Permission denied" unless pn.writable?
 	halt 400, "Not a directory" unless pn.directory?
 		
-	class_name = params[:class_name]
-
-	redirect_back_with_msg("danger", "Invalid class name: '#{class_name}'") unless class_name.match /\A\w+$\z/
-	
-	script_pn = Pathname.new(".").realpath.join("hw_dir_setup")
-
+	redirect_back_with_msg("danger", "Invalid class name: '#{class_name}'") unless class_name.match /\A\w+$\z/	
 	redirect_back_with_msg("danger", "Internal error: could not access script") unless script_pn.exist?
 
 	hw_dir_setup_cmd = "#{script_pn} #{class_name} #{pn.basename}"	
@@ -181,5 +177,20 @@ post '/add/class' do
 end
 
 post '/add/assignment' do
+	pn = Pathname.new(params[:hw_dir])
+	assignment_name = params[:assignment_name]
+	script_pn = pn.realpath.join("scripts").join("add_assignment")
+	date_due = params[:date_due]
+
+	halt 404, "Parent directory not found" unless pn.exist?
+	halt 403, "Permission denied" unless pn.writable?
+	halt 400, "Not a directory" unless pn.directory?	
+	halt 401, "Not a homework directory" unless (pn + IDENTIFICATION_FILE).exist?
+
+	redirect_back_with_msg("danger", "Invalid class name: '#{assignment_name}'") unless assignment_name.match /\A\w+$\z/
+	redirect_back_with_msg("danger", "Internal error: could not access script") unless script_pn.exist?
+
+	add_assignment_cmd = "#{script_pn} #{assignment_name} #{date_due}"
+
 	redirect back
 end
