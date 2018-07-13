@@ -74,7 +74,7 @@ get '/all' do
 		end
 	end
 
-	@table_rows = @table_rows.sort_by{|c| c.date_created}.reverse!
+	@table_rows.sort_by!{|c| c.date_created}.reverse!
 	
 	erb :index
 end
@@ -92,7 +92,7 @@ get '/all/:project' do
 		@table_rows.push ClassInfo.new(hw_dir_path)
 	end
 
-	@table_rows = @table_rows.sort_by{|c| c.date_created}.reverse!
+	@table_rows.sort_by!{|c| c.date_created}.reverse!
 
 	erb :project
 end
@@ -112,7 +112,7 @@ get '/all/:project/:class' do
 		@table_rows.push AssignmentInfo.new(assign_path)
 	end	
 	
-	@table_rows = @table_rows.sort_by{|c| c.date_created}.reverse!
+	@table_rows.sort_by!{|c| c.date_due.nil? ? c.date_created : c.date_due}.reverse!
 
 	erb :class	
 end
