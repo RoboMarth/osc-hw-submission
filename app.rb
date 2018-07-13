@@ -15,8 +15,8 @@ ClassInfo = Struct.new(:name, :project, :instructor, :assignments, :submissions,
 		self[:name] = hw_dir_path.basename.to_s
 		self[:project] = hw_dir_path.dirname.basename.to_s
 		self[:instructor] = `getent passwd #{hw_dir_path.stat.uid} | cut -d ':' -f 5`
-		self[:assignments] = hw_dir_path.children.count - 2 # minus 2 because of scripts directory and homework dir file 
-		self[:submissions] = hw_dir_path.children.flat_map {|pc| pc.children if pc.directory?}.compact.count{|x| x.directory?} 
+		self[:assignments] = hw_dir_path.children.select{|a| (a + DATE_FILE).exist?}
+		self[:submissions] = self[:assignments].flat_map{|a| a.children}.select{|x| x.directory?} 
 		self[:date_created] = (hw_dir_path + IDENTIFICATION_FILE).mtime
 	end
 end
@@ -24,7 +24,7 @@ end
 AssignmentInfo = Struct.new(:name, :submissions,:date_created, :date_due) do
 	def initialize (dir_path)
 		self[:name] = dir_path.basename.to_s
-		self[:submissions] = dir_path.children.count{|x| x.directory?}	
+		self[:submissions] = dir_path.children.select{|x| x.directory?}	
 		line1, line2 = IO.readlines((dir_path + DATE_FILE).to_s, chomp: true)
 		self[:date_created] = DateTime.parse(line1.split("Created: ").last)
 		self[:date_due] = DateTime.parse(line2.split("Due: ").last) rescue nil # if date is not valid

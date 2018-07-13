@@ -40,8 +40,8 @@
 		<th scope="row" class="text-left"><a href="<%= url("/all/#{c.project}/#{c.name}") %>"><%= c.name %></a></th>
 		<td><a href="<%= url("/all/#{c.project}") %>"><%= c.project %></a></td>	
 		<td><%= c.instructor %></td>
-		<td><%= c.assignments %></td>
-		<td><%= c.submissions %></td>
+		<td><%= c.assignments.count %></td>
+		<td><%= c.submissions.count %></td>
 		<td><%= c.date_created.strftime("%F") %></td>
 	</tr>
 	<% end %>
