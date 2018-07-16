@@ -3,6 +3,7 @@ require 'open3'
 require 'date'
 require 'pathname'
 require 'etc'
+require 'fileutils'
 
 enable :sessions
 
@@ -99,17 +100,20 @@ get '/all/:project' do
 	erb :project
 end
 
-get '/all/:project/:class' do
-	@table_rows = Array.new # paths to hw submissions (e.g. /fs/project/PZS0530/some_class/osc0001)
+before '/all/:project/:class' do
 	@project = params[:project]
 	@class = params[:class]
 
-	class_path = Pathname.new(PROJECTS_DIR).join(@project).join(@class)
-	halt 404, "File or directory not found" unless class_path.exist?
-	halt 403, "Permission denied" unless class_path.readable?
-	halt 401, "Not a homework directory" unless (class_path + IDENTIFICATION_FILE).exist?
+	@class_path = Pathname.new(PROJECTS_DIR).join(@project).join(@class)
+	halt 404, "File or directory not found" unless @class_path.exist?
+	halt 403, "Permission denied" unless @class_path.readable?
+	halt 401, "Not a homework directory" unless (@class_path + IDENTIFICATION_FILE).exist?
+end
 
-	Pathname.glob(class_path + "*" + DATE_FILE) do | p |
+get '/all/:project/:class' do
+	@table_rows = Array.new # paths to hw submissions (e.g. /fs/project/PZS0530/some_class/osc0001)
+
+	Pathname.glob(@class_path + "*" + DATE_FILE) do | p |
 		assign_path = p.dirname	
 		@table_rows.push AssignmentInfo.new(assign_path)
 	end	
@@ -117,6 +121,11 @@ get '/all/:project/:class' do
 	@table_rows.sort_by!{|c| c.date_due.nil? ? c.date_created : c.date_due}.reverse!
 
 	erb :class	
+end
+
+delete '/all/:project/:class' do 
+	FileUtils.remove_entry_secure @class_path.to_s
+	redirect to '/all'
 end
 
 get '/download/*' do | glob |

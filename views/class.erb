@@ -15,7 +15,10 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-				<button type+"button" class="btn btn-danger">Yes, delete this class</button>
+				<form action="<%= url("/all/#{@project}/#{@class}") %>" method ="post">
+					<input type="hidden" name="_method" value="DELETE">
+					<button type="submit" class="btn btn-danger">Yes, delete this class</button>
+				</form>
 			</div>
 		</div>
 	</div>
