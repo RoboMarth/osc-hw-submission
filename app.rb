@@ -36,6 +36,14 @@ AssignmentInfo = Struct.new(:name, :open?, :submissions, :date_created, :date_du
 	end
 end
 
+SubmissionInfo = Struct.new(:submitter, :size, :date_submitted) do
+	def initialize (dir_path)
+		self[:submitter] = dir_path.basename.to_s
+		self[:size] = 0
+		self[:date_submitted] = dir_path.mtime
+	end
+end
+
 Message = Struct.new(:type, :text) # type corresponds to bootstrap theme colors: success, danger, warning, info
 
 helpers do
@@ -113,7 +121,7 @@ before '/all/:project/:class' do
 end
 
 get '/all/:project/:class' do
-	@table_rows = Array.new # paths to hw submissions (e.g. /fs/project/PZS0530/some_class/osc0001)
+	@table_rows = Array.new # paths to hw assignments (e.g. /fs/project/PZS0530/some_class/HW1)
 
 	Pathname.glob(@class_path + "*" + DATE_FILE) do | p |
 		assign_path = p.dirname	
@@ -129,6 +137,34 @@ delete '/all/:project/:class' do
 	FileUtils.remove_entry_secure @class_path.to_s
 	session[:msgs] = Message.new("success", "Class removed: directory and contents at #{@class_path} were deleted")
 	redirect to '/all'
+end
+
+before 'all/:project/:class/:assignment' do
+	@assignment = params[:assignment]
+	@project = params[:project]
+	@class = params[:class]
+
+	@assignment_path = Pathname.new(PROJECTS_DIR).join(@project).join(@class).join(@assignment)
+	halt 404, "File or directory not found" unless @assignment_path.exist?
+	halt 401, "Not in a homework directory" unless (@assignment_path.dirname + IDENTIFICATION_FILE).exist?
+end
+
+get 'all/:project/:class/:assignment' do
+	if @assignment_path.readable? # if user is the instructor
+		@table_rows = Array.new
+
+		@assignment_path.each_child do | p |
+			@table_rows.push SubmissionInfo.new(p)
+		end
+	
+		@table_rows.sort_by!{|s| s.submitter}.reverse!
+
+		erb :assignment
+	end
+end
+
+before 'all/:project/:class/:assignment' do
+
 end
 
 get '/download/*' do | glob |
