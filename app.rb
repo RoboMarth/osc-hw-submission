@@ -126,6 +126,7 @@ end
 
 delete '/all/:project/:class' do 
 	FileUtils.remove_entry_secure @class_path.to_s
+	session[:msgs] = Message.new("success", "Class removed: directory and contents at #{@class_path} were deleted")
 	redirect to '/all'
 end
 
