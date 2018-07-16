@@ -25,7 +25,12 @@
 				<li class="breadcrumb-item"><a href="https://ondemand.osc.edu/pun/sys/dashboard/apps/index">All Apps</a></li>
 				<li class="breadcrumb-item"><a href="<%= url("/") %>">Homework Submission</a></li>
 				<%# definitely a better way to this but I'm lazy %>
-				<% if @class %>	
+				<% if @assignment %>	
+					<li class="breadcrumb-item"><a href="<%= url("/all") %>">All Classes</a></li>
+					<li class="breadcrumb-item"><a href="<%= url("/all/#{@project}") %>"><%= @project %></a></li>
+					<li class="breadcrumb-item"><a href="<%= url("/all/#{@project}/#{@class}") %>"><%= @class %></a></li>
+					<li class="breadcrumb-item active"><%= @assignment %></li>
+				<% elsif @class %>	
 					<li class="breadcrumb-item"><a href="<%= url("/all") %>">All Classes</a></li>
 					<li class="breadcrumb-item"><a href="<%= url("/all/#{@project}") %>"><%= @project %></a></li>
 					<li class="breadcrumb-item active"><%= @class %></li>

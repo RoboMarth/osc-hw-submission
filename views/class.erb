@@ -30,8 +30,8 @@
 <div class="table-responsive-xl">
 <table class="table table-hover text-center mt-3">
 	<caption class="text-right">
-		All homework assignments for <%= @class %><br>
-		<a href="https://ondemand.osc.edu/pun/sys/files/fs<%=@class_path%>">Open in file explorer</a>
+		All assignments for <%= @class %><br>
+		<a href="https://ondemand.osc.edu/pun/sys/files/fs<%=@assignment_path%>">Open in file explorer</a>
 	</caption>
 	<thead class="thead-dark"><tr>	
 		<th scope="col" class="text-left">Assignment Name</th>
@@ -43,7 +43,7 @@
 	<tbody>
 	<% @table_rows.each do | a | %>
 	<tr>
-		<th scope="row" class="text-left"><a href="<%= url("#") %>"><%= a.name %></a></th>
+		<th scope="row" class="text-left"><a href="<%= url("/all/#{@project}/#{@class}/#{a.name}") %>"><%= a.name %></a></th>
 		<td><%= a.open? ? '<span class="text-success">Open</span>' : '<span class="text-danger">Locked</span>' %></td>
 		<td><%= a.submissions.count %></td>
 		<td><%= a.date_created.strftime("%F") %></td>

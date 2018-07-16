@@ -1,0 +1,53 @@
+<div class="d-flex flex-row justify-content-end mt-5">
+	<h2 class="flex-grow-1">Assignment: <%= @assignment %></h2>
+	<button class="btn btn-danger ml-3" type="button" data-toggle="modal" data-target="#confirmDelete" aria-controls="addClass">Delete This Assigment</button>
+</div>
+
+<div class="modal fade" id="confirmDelete" tabindex="-1" role="dialog" aria-labelledby="confirmDelete" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="confirmDelete">Are you sure?</h4>
+			</div>
+			<div class="modal-body">
+				<p>This will delete all submissions under this assignment. This operation is non-recoverable.</p>
+				<%= "<p><strong>Warning:</strong> There are other files in the assignment folder NOT listed below that will be
+					 permanently deleted by this operation. Check the <a href=\"https://ondemand.osc.edu/pun/sys/files/fs#{@assignment_path}\">file system</a>
+					 before deleting.</p>" if (@assignment_path.children(false).map{|p| p.to_s} - [DATE_FILE, ASSIGNMENT_OPEN_FILE]).count > @table_rows.count %>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+				<form action="<%= url("/all/#{@project}/#{@class}/#{@assignment}") %>" method ="post">
+					<input type="hidden" name="_method" value="DELETE">
+					<button type="submit" class="btn btn-danger">Yes, delete this assignment</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="table-responsive-xl">
+<table class="table table-hover table-sm text-center mt-3">
+	<caption class="text-right">
+		All submissions for <%= @assignment %><br>
+		<a href="https://ondemand.osc.edu/pun/sys/files/fs<%=@assignment_path%>">Open in file explorer</a>
+	</caption>
+	<thead class="thead-dark"><tr>	
+		<th scope="col" class="text-left">Submitted By</th>
+		<th scope="col">Size</th>
+		<th scope="col">Date Submitted</th>
+		<th scope="col">Late?</th>
+	</thead></tr>
+	<tbody>
+	<% @table_rows.each do | s | %>
+	<tr>
+		<th scope="row" class="text-left"><%= s.submitter %></th>
+		<td><%= s.size %></td>
+		<td><%= s.date_submitted.strftime("%F") %></td>
+		<td></td>
+	</tr>	
+	<% end %>
+	</tbody>
+</table>
+</div>
+

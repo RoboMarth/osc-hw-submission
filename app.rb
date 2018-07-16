@@ -38,7 +38,7 @@ end
 
 SubmissionInfo = Struct.new(:submitter, :size, :date_submitted) do
 	def initialize (dir_path)
-		self[:submitter] = dir_path.basename.to_s
+		self[:submitter] = `getent passwd #{dir_path.basename.to_s} | cut -d ':' -f 5`
 		self[:size] = 0
 		self[:date_submitted] = dir_path.mtime
 	end
@@ -139,7 +139,7 @@ delete '/all/:project/:class' do
 	redirect to '/all'
 end
 
-before 'all/:project/:class/:assignment' do
+before '/all/:project/:class/:assignment' do
 	@assignment = params[:assignment]
 	@project = params[:project]
 	@class = params[:class]
@@ -149,12 +149,12 @@ before 'all/:project/:class/:assignment' do
 	halt 401, "Not in a homework directory" unless (@assignment_path.dirname + IDENTIFICATION_FILE).exist?
 end
 
-get 'all/:project/:class/:assignment' do
+get '/all/:project/:class/:assignment' do
 	if @assignment_path.readable? # if user is the instructor
 		@table_rows = Array.new
 
 		@assignment_path.each_child do | p |
-			@table_rows.push SubmissionInfo.new(p)
+			@table_rows.push SubmissionInfo.new(p) if p.directory?
 		end
 	
 		@table_rows.sort_by!{|s| s.submitter}.reverse!
@@ -163,7 +163,7 @@ get 'all/:project/:class/:assignment' do
 	end
 end
 
-before 'all/:project/:class/:assignment' do
+delete '/all/:project/:class/:assignment' do
 
 end
 
