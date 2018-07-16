@@ -187,7 +187,7 @@ post '/add/assignment' do
 	halt 400, "Not a directory" unless pn.directory?	
 	halt 401, "Not a homework directory" unless (pn + IDENTIFICATION_FILE).exist?
 
-	redirect_back_with_msg("danger", "Invalid class name: '#{assignment_name}'") unless assignment_name.match /\A\w+$\z/
+	redirect_back_with_msg("danger", "Invalid assignment name: '#{assignment_name}'") unless assignment_name.match /\A\w+$\z/
 	redirect_back_with_msg("danger", "Internal error: could not access script") unless script_pn.exist?
 
 	add_assignment_cmd = "#{script_pn} #{assignment_name} #{date_due}"
