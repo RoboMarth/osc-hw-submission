@@ -5,7 +5,8 @@ require 'pathname'
 require 'etc'
 require 'fileutils'
 
-enable :sessions
+enable :sessions # allow displaying of alerts after redirect
+use Rack::MethodOverride # enable delete route in old browsers
 
 IDENTIFICATION_FILE = "this_is_a_homework_directory" # file found in HW directories to identify them as such
 SCRIPTS_DIR = "scripts" # name of the scripts directory, found in each HW directory that holds all the assignment-related scripts
