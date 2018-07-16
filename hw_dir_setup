@@ -67,8 +67,8 @@ cat <<- _EOF_ > add_assignment
 	hw_name="\$1"
 	due_date="\$2"
 
-	# need execute perms to check if assignment is open, may not be same group here
-	mkdir "$hw_dir/\$hw_name" --mode=711 || exit 1 
+	# need read perms to check if assignment is open
+	mkdir "$hw_dir/\$hw_name" --mode=710 || exit 1 
 	touch "$hw_dir/\$hw_name/$RM_ME"
 	echo "Created: \$(date)" > "$hw_dir/\$hw_name/meta_date_a"
 
