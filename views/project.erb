@@ -21,7 +21,10 @@
 
 <div class="table-responsive-xl">
 <table class="table table-hover text-center mt-3">
-	<caption class="text-right">All classes under <%= @project %> accessible by <%= `whoami` %></caption>
+	<caption class="text-right">
+		All classes under <%= @project %> accessible by <%= `whoami` %><br>
+		<a href="https://ondemand.osc.edu/pun/sys/files/fs<%=@project_path%>">Open in file explorer</a>
+	</caption>
 	<thead class="thead-dark"><tr>	
 		<th scope="col" class="text-left">Class Name</th>
 		<th scope="col">Instructor</th>
