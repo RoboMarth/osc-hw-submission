@@ -8,6 +8,7 @@ require 'fileutils'
 enable :sessions
 
 IDENTIFICATION_FILE = "this_is_a_homework_directory" # file found in HW directories to identify them as such
+SCRIPTS_DIR = "scripts" # name of the scripts directory, found in each HW directory that holds all the assignment-related scripts
 PROJECTS_DIR = "/fs/project/" # directory contataining all project folders
 DATE_FILE = "meta_date_a" # file found in each assignment directory, contains creation and due dates, also serves as identification
 ASSIGNMENT_OPEN_FILE = "rm_me_to_lock_assignment" # file found in assignment directory if assignment is open for submission

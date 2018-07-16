@@ -11,7 +11,10 @@
 				<h4 class="modal-title" id="confirmDelete">Are you sure?</h4>
 			</div>
 			<div class="modal-body">
-				This will delete all assignments and submissions. This operation is non-recoverable.
+				<p>This will delete all assignments and submissions. This operation is non-recoverable.</p>
+				<%= "<p><strong>Warning:</strong> There are other files in the homework folder NOT listed below that will be
+					 permanently deleted by this operation. Check the <a href=\"https://ondemand.osc.edu/pun/sys/files/fs/#{@class_path}\">file system</a>
+					 before deleting.</p>" if (@class_path.children(false).map{|p| p.to_s} - [SCRIPTS_DIR, IDENTIFICATION_FILE]).count > @table_rows.count %>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
