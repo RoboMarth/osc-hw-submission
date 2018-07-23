@@ -1,47 +1,47 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+ 	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
 	<link rel="stylesheet" href="<%= url("/css/styles.css") %>">
-    <title>OSC HW Submission</title>
-  </head>
-  <body>
-	<header>
-		<nav class="navbar navbar-dark" style="background-color: #c8102e">
-			<a class="navbar-brand" href="https://ondemand.osc.edu/pun/sys/dashboard/">OSC OnDemand</a>
-			<span class ="navbar-txt text-light">Logged in as <%= `whoami` %></span>
-		</nav>
-	</header>
+	<title>OSC HW Submission</title>
+</head>
 
-	<main class="container">
-		<nav aria-label="breadcrumb" class="mt-5 mb-4">
-			<ol class="breadcrumb">
-				<li class="breadcrumb-item"><a href="https://ondemand.osc.edu/pun/sys/dashboard/">Home</a></li>
-				<li class="breadcrumb-item"><a href="https://ondemand.osc.edu/pun/sys/dashboard/apps/index">All Apps</a></li>
-				<li class="breadcrumb-item"><a href="<%= url("/") %>">Homework Submission</a></li>
-				<%# definitely a better way to this but I'm lazy %>
-				<% if @assignment %>	
-					<li class="breadcrumb-item"><a href="<%= url("/all") %>">All Classes</a></li>
-					<li class="breadcrumb-item"><a href="<%= url("/all/#{@project}") %>"><%= @project %></a></li>
-					<li class="breadcrumb-item"><a href="<%= url("/all/#{@project}/#{@class}") %>"><%= @class %></a></li>
-					<li class="breadcrumb-item active"><%= @assignment %></li>
-				<% elsif @class %>	
-					<li class="breadcrumb-item"><a href="<%= url("/all") %>">All Classes</a></li>
-					<li class="breadcrumb-item"><a href="<%= url("/all/#{@project}") %>"><%= @project %></a></li>
-					<li class="breadcrumb-item active"><%= @class %></li>
-				<% elsif @project %>
-					<li class="breadcrumb-item"><a href="<%= url("/all") %>">All Classes</a></li>
-					<li class="breadcrumb-item active"><%= @project %></li>
-				<% else %>
-					<li class="breadcrumb-item active">All Classes</li>
-				<% end %>
-			</ol>	
-		</nav>
+<body>
+<header>
+	<nav class="navbar navbar-dark" style="background-color: #c8102e">
+		<a class="navbar-brand" href="https://ondemand.osc.edu/pun/sys/dashboard/">OSC OnDemand</a>
+		<span class ="navbar-txt text-light">Logged in as <%= `whoami` %></span>
+	</nav>
+</header>
+
+<main class="container">
+	<nav aria-label="breadcrumb" class="mt-5 mb-4">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="https://ondemand.osc.edu/pun/sys/dashboard/">Home</a></li>
+			<li class="breadcrumb-item"><a href="https://ondemand.osc.edu/pun/sys/dashboard/apps/index">All Apps</a></li>
+			<li class="breadcrumb-item"><a href="<%= url("/") %>">Homework Submission</a></li>
+		<%# definitely a better way to this but I'm lazy %>
+		<% if @assignment %>	
+			<li class="breadcrumb-item"><a href="<%= url("/all") %>">All Classes</a></li>
+			<li class="breadcrumb-item"><a href="<%= url("/all/#{@project}") %>"><%= @project %></a></li>
+			<li class="breadcrumb-item"><a href="<%= url("/all/#{@project}/#{@class}") %>"><%= @class %></a></li>
+			<li class="breadcrumb-item active"><%= @assignment %></li>
+		<% elsif @class %>	
+			<li class="breadcrumb-item"><a href="<%= url("/all") %>">All Classes</a></li>
+			<li class="breadcrumb-item"><a href="<%= url("/all/#{@project}") %>"><%= @project %></a></li>
+			<li class="breadcrumb-item active"><%= @class %></li>
+		<% elsif @project %>
+			<li class="breadcrumb-item"><a href="<%= url("/all") %>">All Classes</a></li>
+			<li class="breadcrumb-item active"><%= @project %></li>
+		<% else %>
+			<li class="breadcrumb-item active">All Classes</li>
+			<% end %>
+		</ol>	
+	</nav>
 		<% @msgs.each do | m | %>
 			<div class="alert alert-<%= m.type %> alert-dismissible fade show" role="alert">				
 				<%= m.text %>
@@ -52,18 +52,18 @@
 		<% end %>
 
 		<%= yield %>
-	</main>
+</main>
 
-	<footer class="footer">
-		<div class="container-fluid">
-			<span class="text-muted">powered by Open OnDemand</span>
-		</div>	
-	</footer>
+<footer class="footer">
+	<div class="container-fluid">
+		<span class="text-muted">powered by Open OnDemand</span>
+	</div>	
+</footer>
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
-  </body>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+</body>
 </html>
