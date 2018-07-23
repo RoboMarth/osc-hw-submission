@@ -68,22 +68,22 @@ get '/all' do
 
 	# get groups
 	stdout_str, stderr_str, status = Open3.capture3("groups")
-	@msgs.push Message.new("danger", "could not identify user's groups (groups)") unless status.success?
+	@msgs << Message.new("danger", "could not identify user's groups (groups)") unless status.success?
 	groups = stdout_str.chomp.split
 	
 	# look for project directories under /fs/project/
 	groups.each do | g |
 		path = Pathname.new(PROJECTS_DIR).join(g)
-		@project_paths.push path if path.directory?
+		@project_paths << path if path.directory?
 	end
 		
-	@msgs.push Message.new("danger", "user does have access to any project directories") if @project_paths.empty?
+	@msgs << Message.new("danger", "user does have access to any project directories") if @project_paths.empty?
 
 	# look for hw directories in the project directories
 	@project_paths.each do | pp |
 		Pathname.glob(pp + "*" + IDENTIFICATION_FILE) do | p |
 			hw_dir_path = p.dirname	
-			@table_rows.push ClassInfo.new(hw_dir_path)
+			@table_rows << ClassInfo.new(hw_dir_path)
 		end
 	end
 
@@ -102,7 +102,7 @@ get '/all/:project' do
 
 	Pathname.glob(@project_path + "*" + IDENTIFICATION_FILE) do | p |
 		hw_dir_path = p.dirname
-		@table_rows.push ClassInfo.new(hw_dir_path)
+		@table_rows << ClassInfo.new(hw_dir_path)
 	end
 
 	@table_rows.sort_by!{|c| c.date_created}.reverse!
@@ -125,7 +125,7 @@ get '/all/:project/:class' do
 
 	Pathname.glob(@class_path + "*" + DATE_FILE) do | p |
 		assign_path = p.dirname	
-		@table_rows.push AssignmentInfo.new(assign_path)
+		@table_rows << AssignmentInfo.new(assign_path)
 	end	
 	
 	@table_rows.sort_by!{|c| c.date_due.nil? ? c.date_created : c.date_due}.reverse!
@@ -154,7 +154,7 @@ get '/all/:project/:class/:assignment' do
 		@table_rows = Array.new
 
 		@assignment_path.each_child do | p |
-			@table_rows.push SubmissionInfo.new(p) if p.directory?
+			@table_rows << SubmissionInfo.new(p) if p.directory?
 		end
 	
 		@table_rows.sort_by!{|s| s.submitter}.reverse!
@@ -237,8 +237,12 @@ post '/add/assignment' do
 
 	redirect_back_with_msg("danger", "Invalid assignment name: '#{assignment_name}'") unless assignment_name.match /\A\w+$\z/
 	redirect_back_with_msg("danger", "Internal error: could not access script") unless script_pn.exist?
+	
+	add_assignment_cmd = "#{script_pn} '#{assignment_name}' '#{date_due}'"
+	add_assignment_cmd = "#{script_pn} '#{assignment_name}' '#{date_due}'"
 
-	add_assignment_cmd = "#{script_pn} #{assignment_name} #{date_due}"
+	stdout, stderro, status = Open3.capture(add_assignment_cmd)	
+	redirect_back_with_msg("warning", "Could not add assignment: #{stdout}") unless status.success?		
 
 	redirect back
 end
