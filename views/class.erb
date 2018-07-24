@@ -98,3 +98,43 @@
 </form>
 </div>
 </div>
+
+<div class="card mt-4">
+<div class="card-body">
+<h3 class=card-title">Submit homework <small class="text-muted"> as a student</small></h3>
+<form action="<%= url('/submit/assignment') %>" method="post">
+	<div class="form-group">	
+		<label for="assignmentName">Assignment name</label>
+		<select class="form-control" id="assignmentName" name="assignment_name">
+		<% @table_rows.each do | a | %>
+			<option><%= a.name %></option>
+		<% end %>
+		</select>
+		<small class="form-text text-muted">Name of assignment directory to be submitted to from the table above</small>
+	</div>
+	<div class="form-group">
+		<label for="sourcePath">Source path</label>
+		<input type="text" class="form-control" id="sourcePath" name="source_path">		
+		<small class="form-text text-muted">Location on the <a href="https://ondemand.osc.edu/pun/sys/files/" target="_blank">file system</a> of the folder containing all the files 
+			you want to submit (see below for help)</small>
+	</div>
+	<input type="hidden" name="hw_dir" value="<%=@class_path%>">
+	<button type="submit" class="btn btn-primary float-right" disabled>Submit</button>
+</form>
+</div>
+</div>
+
+<div class="card mt-4">
+<div class="card-body">
+<h3 class="mb-4">Getting the source path <small class="text-muted">for submitting homework</small></h3>
+<p>Note: if your homework is not already on the system, you can upload it using File Explorer. Then, follow the steps below.</p>
+<ol>
+<li>Open <a href="https://ondemand.osc.edu/pun/sys/files/" target="_blank">File Explorer</a>.</li>
+<li>Navigate to the folder you want to submit (you may want to start by clicking 'Home Directory' in the top left).</li>
+<li>Double-click on that folder to open it.</li>
+<li>In the top-right group of buttons, click 'Go To...'.</li>
+<li>Copy the highlighted text.</li>
+<li>Paste into the form above under 'Source path'.</li> 
+</ol>
+</div>
+</div>
