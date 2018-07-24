@@ -68,7 +68,7 @@
 		<label for="parentDirectory">Project directory</label>
 		<input type="text" readonly class="form-control" id="parentDirectory" name="parent_dir" value="<%= @project_path %>">
 		<small class="form-text text-muted">Location in project space file system where the class directory will be created;
-			return to 'All Classes' in the navbar above to select a different directory</small>
+			return to '<a href="<%= url("/all") %>">All Classes</a>' to select a different directory</small>
 	</div>	
 	<button type="submit" class="btn btn-primary float-right">Submit</button>
 </form>
