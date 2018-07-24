@@ -5,8 +5,8 @@
 		<thead class="thead-dark"><tr>	
 			<th scope="col" class="text-left">Name</th>
 			<th scope="col">Status</th>
-			<th scope="col">Date Created</th>
-			<th scope="col">Date and Time Due</th>
+			<th scope="col" class="d-lg-table-cell d-none">Date Created</th>
+			<th scope="col">Date Due</th>
 			<th scope="col">Actions</th>
 		</thead></tr>
 		<tbody>
@@ -18,8 +18,8 @@
 				</span>
 			</h5></th>
 			<td><%= a.open? ? '<span class="text-success">Open</span>' : '<span class="text-danger">Locked</span>' %></td>
-			<td><%= a.date_created.strftime("%F") %></td>
-			<td><%= a.date_due.nil? ? "<span class=\"text-muted\">no due date set</span>" : 
+			<td class="d-lg-table-cell d-none"><%= a.date_created.strftime("%F") %></td>
+			<td><%= a.date_due.nil? ? "<span class=\"text-muted\">none set</span>" : 
 					a.date_due.strftime('%F <span class="text-muted">at</span> %H:%M') %></td>
 			<td style="width: 1%">
 			<div class="btn-group dropright">
