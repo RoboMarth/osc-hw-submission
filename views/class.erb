@@ -16,7 +16,7 @@
 			<td><%= a.open? ? '<span class="text-success">Open</span>' : '<span class="text-danger">Locked</span>' %></td>
 			<td><%= a.submissions.count %></td>
 			<td><%= a.date_created.strftime("%F") %></td>
-			<td><%= a.date_due.nil? ? "<span class=\"text-muted\">None</span>" : a.date_due.strftime("%F at %I:%M %p") %></td>
+			<td><%= a.date_due.nil? ? "<span class=\"text-muted\">none</span>" : a.date_due.strftime("%F at %H:%M") %></td>
 		</tr>	
 		<% end %>
 		<% if @table_rows.empty? %>
@@ -39,13 +39,14 @@
 	</div>
 	<div class="form-group">
 		<label for="dateDue">Date due</label>
-		<input class="form-control" id="dateDue" name="date_due" width="276" placeholder="mm/dd/yyyy">	
+		<input class="form-control" id="dateDue" name="date_due" width="276" placeholder="none">	
 		<script>
 			var yesterday = new Date();
 			yesterday.setDate(yesterday.getDate()-1);
 			$('#dateDue').datepicker({
 				uiLibrary: 'bootstrap4',
-				minDate: yesterday
+				minDate: yesterday,
+				format: 'yyyy-mm-dd'
 			});
 		</script>
 		<small class="form-text text-muted">Leave blank to have no due date</small>
@@ -55,10 +56,11 @@
 		<input class="form-control" id="timeDue" name="time_due" width="276" placeholder="hh:mm" value="00:00">
 		<script>
 			$('#timeDue').timepicker({
-				uiLibrary: 'bootstrap4'
+				uiLibrary: 'bootstrap4',
+				mode: '24hr'
 			});
 		</script>
-		<small class="form-text text-muted">Default is midnight (12:00 am)</small>
+		<small class="form-text text-muted">24 hour format, ignored if date is none</small>
 	</div>	
 	<input type="hidden" name="hw_dir" value="<%=@class_path%>">
 	<button type="submit" class="btn btn-primary float-right">Submit</button>
