@@ -26,8 +26,9 @@ ClassInfo = Struct.new(:path, :name, :project, :instructor, :assignments, :submi
 	end
 end
 
-AssignmentInfo = Struct.new(:name, :open?, :submissions, :date_created, :date_due) do
+AssignmentInfo = Struct.new(:path, :name, :open?, :submissions, :date_created, :date_due) do
 	def initialize (dir_path)
+		self[:path] = dir_path
 		self[:name] = dir_path.basename.to_s
 		self[:submissions] = dir_path.children.select{|x| x.directory?}	
 		line1, line2 = IO.readlines((dir_path + DATE_FILE).to_s, chomp: true)

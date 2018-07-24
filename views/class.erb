@@ -5,18 +5,45 @@
 		<thead class="thead-dark"><tr>	
 			<th scope="col" class="text-left">Name</th>
 			<th scope="col">Status</th>
-			<th scope="col">Submissions</th>
 			<th scope="col">Date Created</th>
 			<th scope="col">Date and Time Due</th>
+			<th scope="col">Actions</th>
 		</thead></tr>
 		<tbody>
 		<% @table_rows.each do | a | %>
 		<tr>
-			<th scope="row" class="text-left"><a href="<%= url("/all/#{@project}/#{@class}/#{a.name}") %>"><%= a.name %></a></th>
+			<th scope="row" class="text-left"><h5><%= a.name %></h5></th>
 			<td><%= a.open? ? '<span class="text-success">Open</span>' : '<span class="text-danger">Locked</span>' %></td>
-			<td><%= a.submissions.count %></td>
 			<td><%= a.date_created.strftime("%F") %></td>
-			<td><%= a.date_due.nil? ? "<span class=\"text-muted\">none</span>" : a.date_due.strftime("%F at %H:%M") %></td>
+			<td><%= a.date_due.nil? ? "<span class=\"text-muted\">no due date set</span>" : 
+					a.date_due.strftime('%F <span class="text-muted">at</span> %H:%M') %></td>
+			<td style="width: 1%">
+			<div class="btn-group dropright">
+				<a role="button" class="btn btn-secondary btn-sm" 
+					href="<%= url("/all/#{@project}/#{@class}/#{a.name}") %>">
+					View submissions
+				</a>
+				<button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-toggle-split" 
+						data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					More
+  				</button>
+  				<div class="dropdown-menu">
+    				<a class="dropdown-item disabled" href="#">Download all submissions</a>
+    				<a class="dropdown-item" target="_blank"
+						 href="https://ondemand.osc.edu/pun/sys/files/fs<%=a.path%>/">Open in file explorer</a>
+    				<a class="dropdown-item disabled" href="#">Rename</a>
+    				<a class="dropdown-item disabled" href="#">Change date due</a>
+					<% if a.open? %>	
+    				<a class="dropdown-item disabled" href="#">Lock assignment</a>
+					<% else %>
+    				<a class="dropdown-item disabled" href="#">Unlock assignment</a>
+					<% end %>
+    				<div class="dropdown-divider"></div>
+					<button class="btn btn-danger dropdown-item text-danger" type="button" data-toggle="modal" data-target="#confirmDelete<%=a.name%>" aria-controls="addClass">Delete</button>
+  			</div>
+		</div>	
+		</td>
+
 		</tr>	
 		<% end %>
 		<% if @table_rows.empty? %>
