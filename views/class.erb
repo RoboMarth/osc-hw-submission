@@ -138,3 +138,29 @@
 </ol>
 </div>
 </div>
+
+<% @table_rows.each do | a | %>
+<div class="modal fade" id="confirmDelete<%=a.name%>" tabindex="-1" role="dialog" aria-labelledby="confirmDelete<%=a.name%>" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="confirmDelete">Are you sure?</h4>
+			</div>
+			<div class="modal-body">
+				<p>This will delete all (<%=a.submissions.count%>) submissions. This operation is non-recoverable.</p>
+				<p><strong>Warning:</strong> There may be other files in the submission folder NOT counted above
+			  	 that will be permanently deleted by this operation. It is recommend to check the 
+				 <a target="_blank" href="https://ondemand.osc.edu/pun/sys/files/fs<%=a.path%>">file system</a>
+				 before deleting.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+				<form action="<%= url("/all/#{@project}/#{@class}/#{a.name}") %>" method ="post">
+					<input type="hidden" name="_method" value="DELETE">
+					<button type="submit" class="btn btn-danger">Yes, delete <%=a.name%></button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<% end %>

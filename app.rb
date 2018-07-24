@@ -166,7 +166,9 @@ get '/all/:project/:class/:assignment' do
 end
 
 delete '/all/:project/:class/:assignment' do
-
+	FileUtils.remove_entry_secure @assignment_path.to_s
+	session[:msgs] = Message.new("success", "Assignment removed: directory and contents at #{@assignment_path} were deleted")
+	redirect to "/all/#{@project}/#{@class}"
 end
 
 get '/download/*' do | glob |
