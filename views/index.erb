@@ -5,16 +5,23 @@
 	<thead class="thead-dark"><tr>	
 		<th scope="col" class="text-left">Name</th>
 		<th scope="col">Project</th>
-		<th scope="col" class="d-md-table-cell d-none">Instructor</th>
+		<th scope="col" class="d-lg-table-cell d-none">Instructor</th>
 		<th scope="col" class="d-lg-table-cell d-none">Date Created</th>
 		<th scope="col">Actions</th>
 	</thead></tr>
 	<tbody>
 	<% @class_infos.each do | c | %>
 	<tr>
-		<td class="text-left"><h5><%= c.name %></h5></a></th>
+		<td class="text-left"><h5><%= c.name %>
+			<span class="badge badge-dark" data-toggle="tooltip" data-placement="top" title="# of assignments">
+				<%=c.assignments.count%>
+			</span>
+			<span class="badge badge-light" data-toggle="tooltip" data-placement="right" title="# of submissions">
+				<%=c.submissions.count%>
+			</span>
+		</h5></th>
 		<td><%= c.project %></td>	
-		<td class="d-md-table-cell d-none"><%= c.instructor %></td>
+		<td class="d-lg-table-cell d-none"><%= c.instructor %></td>
 		<td class="d-lg-table-cell d-none"><%= c.date_created.strftime("%F") %></td>
 		<td style="width: 1%">
 		<div class="btn-group dropright">

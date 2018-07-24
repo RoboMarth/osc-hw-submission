@@ -12,7 +12,11 @@
 		<tbody>
 		<% @table_rows.each do | a | %>
 		<tr>
-			<th scope="row" class="text-left"><h5><%= a.name %></h5></th>
+			<th scope="row" class="text-left"><h5><%= a.name %>
+				<span class="badge badge-light" data-toggle="tooltip" data-placement="right" title="# of submissions">
+					<%= a.submissions.count %>
+				</span>
+			</h5></th>
 			<td><%= a.open? ? '<span class="text-success">Open</span>' : '<span class="text-danger">Locked</span>' %></td>
 			<td><%= a.date_created.strftime("%F") %></td>
 			<td><%= a.date_due.nil? ? "<span class=\"text-muted\">no due date set</span>" : 
