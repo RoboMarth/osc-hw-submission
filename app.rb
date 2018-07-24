@@ -95,7 +95,7 @@ get '/all' do
 end
 
 get '/all/:project' do
-	@table_rows = Array.new
+	@class_infos = Array.new
 	@project = params[:project]
 
 	@project_path = Pathname.new(PROJECTS_DIR).join(@project)
@@ -104,10 +104,10 @@ get '/all/:project' do
 
 	Pathname.glob(@project_path + "*" + IDENTIFICATION_FILE) do | p |
 		hw_dir_path = p.dirname
-		@table_rows << ClassInfo.new(hw_dir_path)
+		@class_infos << ClassInfo.new(hw_dir_path)
 	end
 
-	@table_rows.sort_by!{|c| c.date_created}.reverse!
+	@class_infos.sort_by!{|c| c.date_created}.reverse!
 
 	erb :project
 end
