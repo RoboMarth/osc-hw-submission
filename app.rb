@@ -229,7 +229,7 @@ post '/add/assignment' do
 	pn = Pathname.new(params[:hw_dir])
 	assignment_name = params[:assignment_name]
 	script_pn = pn.realpath.join("scripts").join("add_assignment")
-	date_due = params[:date_due] + " " + params[:time_due] if params[:date_due]
+	date_due = params[:date_due] + " " + params[:time_due] unless params[:date_due].empty?
 
 	halt 404, "Parent directory not found" unless pn.exist?
 	halt 403, "Permission denied" unless pn.writable?
@@ -239,7 +239,8 @@ post '/add/assignment' do
 	redirect_back_with_msg("danger", "Invalid assignment name: '#{assignment_name}'") unless assignment_name.match /\A\w+$\z/
 	redirect_back_with_msg("danger", "Internal error: could not access script") unless script_pn.exist?
 	
-	add_assignment_cmd = "#{script_pn} '#{assignment_name}' '#{date_due}'"
+	add_assignment_cmd = "#{script_pn} '#{assignment_name}'"
+	add_assignment_cmd << " '#{date_due}'" if date_due
 
 	stdout, stderro, status = Open3.capture3(add_assignment_cmd)	
 	redirect_back_with_msg("warning", "Could not add assignment: #{stdout}") unless status.success?		
