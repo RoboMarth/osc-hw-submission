@@ -66,20 +66,26 @@ cat <<- _EOF_ > add_assignment
 
 	hw_name="\$1"
 	due_date="\$2"
+	assignment_dir="$hw_dir/\$hw_name" 
+
+	if [ -e "\$assignment_dir" ]; then
+		echo "add_assignment: file or directory with name \$hw_name already exists here"
+		exit 1
+	fi
 
 	# need read perms to check if assignment is open
-	mkdir "$hw_dir/\$hw_name" --mode=710 || exit 1 
-	touch "$hw_dir/\$hw_name/$RM_ME"
-	echo "Created: \$(date)" > "$hw_dir/\$hw_name/meta_date_a"
+	mkdir "\$assignment_dir" --mode=710 || exit 1 
+	touch "\$assignment_dir/$RM_ME"
+	echo "Created: \$(date)" > "\$assignment_dir/meta_date_a"
 
 	echo "add_assignment: assignment \$hw_name successfully created and is open to submission"
 	echo -e "\nPlease have your students use '$hw_dir/scripts/submit_hw \$hw_name'"
 	echo -e "to submit their homework for this assignment.\n"
 
 	if [ -n "\$due_date" ]; then
-		echo "    Due: \$(date -d "\$due_date")" >> "$hw_dir/\$hw_name/meta_date_a"
+		echo "    Due: \$(date -d "\$due_date")" >> "\$assignment_dir/meta_date_a"
 		echo "add_assignment: attempting to set auto-lock at due date ..."
-		at "\$due_date" <<< "rm \\"$hw_dir/\$hw_name/$RM_ME\\""
+		at "\$due_date" <<< "rm \\"\$assignment_dir/$RM_ME\\""
 	fi
 _EOF_
 
