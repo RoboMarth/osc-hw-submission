@@ -165,6 +165,21 @@ get '/all/:project/:class/:assignment' do
 	end
 end
 
+# for locking/unlocking assignments
+post '/all/:project/:class/:assignment' do
+	if params[:modify_lock?]	
+		lock_file_path = @assignment_path.join(ASSIGNMENT_OPEN_FILE)
+		if lock_file_path.exist?
+			lock_file_path.delete
+			redirect_back_with_msg("warning", "Assignment #{@assignment} has been locked and will not recieve any further submissions")
+		else
+			File.new(lock_file_path.to_s, "w")
+			redirect_back_with_msg("success", "Assignment #{@assignment} has been unlocked and is open to submissions")
+		end
+	end
+	redirect back
+end
+
 delete '/all/:project/:class/:assignment' do
 	FileUtils.remove_entry_secure @assignment_path.to_s
 	session[:msgs] = Message.new("success", "Assignment removed: directory and contents at #{@assignment_path} were deleted")
