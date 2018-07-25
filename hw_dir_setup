@@ -251,8 +251,27 @@ cat <<- _EOF_ > submit_hw_copy_wrapper.c
 _EOF_
 
 cat <<- _EOF_ > submit_hw_copy
+	hw_name="\$2"
 	src_dir="\$3"
 	dest_dir="$hw_dir/\$2/\$1"
+
+	# ensures scripts directory is not submitted into
+	if [ "\$hw_name" == "scripts" ]; then
+		echo "$PREFIX2 please not attempt to submit into the scripts folder: Not an assignment"
+		exit 1
+	fi
+
+	# checks for existence of assignment
+	if [ ! -d "\$hw_name" ]; then
+		echo "$PREFIX2 cannot submit '\$hw_name': Assignment does not exist"
+		exit 1
+	fi
+
+	# checks if assignment is still available for submission
+	if [ ! -f "\$hw_name/$RM_ME" ]; then
+		echo "$PREFIX2 cannot submit '\$hw_name': Assignment has been locked by your instructor"
+		exit 1
+	fi
 
 	# checks if student owns directory
 	if [ ! \$(stat --format=%U "\$src_dir") == "\$1" ]; then
@@ -262,7 +281,7 @@ cat <<- _EOF_ > submit_hw_copy
 
 	# checks if professor can access directory
 	if ! cd \$src_dir; then
-		echo "PREFIX2 cannot submit from '\$src_dir': Directory path does not have group execute permissions"
+		echo "$PREFIX2 cannot submit from '\$src_dir': Directory path does not have group execute permissions"
 	fi
 
 	# check if submission already exists
