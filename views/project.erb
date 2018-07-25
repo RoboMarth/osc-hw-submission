@@ -26,7 +26,7 @@
 		<td class="d-lg-table-cell d-none"><%= c.instructor %></td>
 		<td class="d-lg-table-cell d-none"><%= c.date_created.strftime("%F") %></td>
 		<td style="width: 1%">
-		<div class="btn-group dropright">
+		<div class="btn-group dropdown">
 			<a role="button" class="btn btn-secondary btn-sm" 
 				href="<%= url("/all/#{c.project}/#{c.name}") %>">
 				View assignments
