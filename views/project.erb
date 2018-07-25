@@ -13,11 +13,13 @@
 	<% @class_infos.each do | c | %>
 	<tr>
 		<td class="text-left"><h5><%= c.name %>
-			<span class="badge badge-dark" data-toggle="tooltip" data-placement="top" title="# of assignments">
-				<%=c.assignments.count%>
+			<span class="badge badge-dark ml-2" data-toggle="tooltip" data-placement="top" 
+					title="<%=c.assignments.count%> assignment<%="s" if c.assignments.count != 1%>">
+				A:<%=c.assignments.count%>
 			</span>
-			<span class="badge badge-light" data-toggle="tooltip" data-placement="right" title="# of submissions">
-				<%=c.submissions.count%>
+			<span class="badge badge-light" data-toggle="tooltip" data-placement="top" 
+					title="<%=c.submissions.count%> submission<%="s" if c.submissions.count != 1%>">
+				S:<%=c.submissions.count%>
 			</span>
 		</h5></th>
 		<td><%= c.project %></td>	

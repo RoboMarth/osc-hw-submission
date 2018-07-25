@@ -13,8 +13,9 @@
 		<% @table_rows.each do | a | %>
 		<tr>
 			<th scope="row" class="text-left"><h5><%= a.name %>
-				<span class="badge badge-light" data-toggle="tooltip" data-placement="right" title="# of submissions">
-					<%= a.submissions.count %>
+				<span class="badge badge-light ml-2" data-toggle="tooltip" data-placement="top" 
+						title="<%=a.submissions.count%> submission<%="s" if a.submissions.count != 1%>">
+					S:<%= a.submissions.count %>
 				</span>
 			</h5></th>
 			<td><%= a.open? ? '<span class="text-success">Open</span>' : '<span class="text-danger">Locked</span>' %></td>
