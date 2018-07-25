@@ -220,17 +220,20 @@ post '/submit/assignment' do
 	instructor = `stat -c '%U' #{hw_dir_path}`
 	submit_cmd = script_path.to_s, assignment_name.to_s, source_path.to_s
 	
-	Dir.mktmpdir {|dir|
-		begin
-			FileUtils.cp_r source_path.to_s, dir
-		rescue
-			redirect_back_with_msg("danger", "Homework not submitted: could not copy all files from source")
-		end
-		`setfacl -recursive -m u:#{instructor}:r #{dir}`
-		stdout, stderr, status = Open3.capture3(*submit_cmd)
-		redirect_back_with_msg("danger", "Failed to submit homework: #{stdout}") unless status.success?
-	}
+	dir = Dir.mktmpdir
 	
+	begin
+		FileUtils.cp_r source_path.to_s, dir
+	rescue
+		FileUtils.remove_entry dir
+		redirect_back_with_msg("danger", "Homework not submitted: could not copy all files from source")
+	end
+	
+	`setfacl -recursive -m u:#{instructor}:r #{dir}`
+	stdout, stderr, status = Open3.capture3(*submit_cmd)
+	
+	FileUtils.remove_entry dir
+	redirect_back_with_msg("danger", "Failed to submit homework: #{stdout}") unless status.success?
 	redirect_back_with_msg("success", "Homework successfully submitted for assignment '#{assignment_name}'.")
 end
 
