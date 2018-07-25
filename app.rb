@@ -203,7 +203,31 @@ get '/download/*' do | glob |
 	else
 		halt 400, "Not a file or directory"
 	end
-end	
+end
+
+post '/submit/assignment' do
+	hw_dir_path = Pathname.new(params[:hw_dir])
+	script_path = hw_dir_path.join("scripts").join("submit_hw_helper")
+	assignment_name = params[:assignment_name]
+	source_path = Pathname.new(params[:source_path])
+
+	halt 401, "Not a homework directory" unless (hw_dir_path + IDENTIFICATION_FILE).exist?
+	halt 401, "Source path does not exist" unless source_path.exist?
+	halt 403, "Permission denied" unless source_path.readable?
+	halt 401, "Could not find/access script" unless script_path.executable?
+	
+	instructor = `stat -c '%U' #{hw_dir_path}`
+	submit_cmd = script_path.to_s, assignment_name.to_s, source_path.to_s
+
+	Dir.mktmpdir {|dir|
+		FileUtils.cp_r source_path.to_s, dir # TODO: error check this
+		`setfacl -recursive -m u:#{instructor}:r #{dir}`
+		stdout, stderr, status = Open3.capture3(*submit_cmd)
+		redirect_back_with_msg("danger", "Failed to submit homework: #{stdout}") unless status.success?
+	}
+	
+	redirect_back_with_msg("success", "Homework successfully submitted for assignment '#{assignment_name}'.")
+end
 
 post '/add/class' do
 	pn = Pathname.new(params[:parent_dir])	
