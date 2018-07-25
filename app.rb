@@ -212,15 +212,20 @@ post '/submit/assignment' do
 	source_path = Pathname.new(params[:source_path])
 
 	halt 401, "Not a homework directory" unless (hw_dir_path + IDENTIFICATION_FILE).exist?
-	halt 401, "Source path does not exist" unless source_path.exist?
-	halt 403, "Permission denied" unless source_path.readable?
-	halt 401, "Could not find/access script" unless script_path.executable?
+	halt 500, "Could not find/access script" unless script_path.executable?
 	
+	redirect_back_with_msg("danger", "Homework not submitted: source directory not found") unless source_path.exist?
+	redirect_back_with_msg("danger", "Homework not submitted: no permission to read source") unless source_path.readable?
+
 	instructor = `stat -c '%U' #{hw_dir_path}`
 	submit_cmd = script_path.to_s, assignment_name.to_s, source_path.to_s
-
+	
 	Dir.mktmpdir {|dir|
-		FileUtils.cp_r source_path.to_s, dir # TODO: error check this
+		begin
+			FileUtils.cp_r source_path.to_s, dir
+		rescue
+			redirect_back_with_msg("danger", "Homework not submitted: could not copy all files from source")
+		end
 		`setfacl -recursive -m u:#{instructor}:r #{dir}`
 		stdout, stderr, status = Open3.capture3(*submit_cmd)
 		redirect_back_with_msg("danger", "Failed to submit homework: #{stdout}") unless status.success?
