@@ -18,7 +18,8 @@
 			<td></td>
 			<td><%= s.date_submitted.strftime('%F <span class="text-muted">at</span> %H:%M') %></td>
 			<td style="width:1%"><div class="btn-group dropdown">
-				<a role="button" class="btn btn-secondary btn-sm" href="#">
+				<a role="button" class="btn btn-secondary btn-sm" 
+				href="<%= url("/download/#{s.path.relative_path_from(Pathname.new(PROJECTS_DIR))}")%>">
 					Download submission
 				</a>
   			</div></td>
