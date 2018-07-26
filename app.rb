@@ -301,5 +301,5 @@ post '/add/assignment' do
 	stdout, stderro, status = Open3.capture3(add_assignment_cmd)	
 	redirect_back_with_msg("warning", "Could not add assignment: #{stdout}") unless status.success?		
 
-	redirect_back_with_msg("info", stdout.to_s)
+	redirect_back_with_msg("success", "Assignment #{assignment_name} has been successfully created and is open to submission")
 end

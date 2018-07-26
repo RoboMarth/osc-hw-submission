@@ -84,8 +84,8 @@ cat <<- _EOF_ > add_assignment
 
 	if [ -n "\$due_date" ]; then
 		echo "    Due: \$(date -d "\$due_date")" >> "\$assignment_dir/meta_date_a"
-		echo "add_assignment: attempting to set auto-lock at due date ..."
-		at "\$due_date" <<< "rm \\"\$assignment_dir/$RM_ME\\""
+	#	echo "add_assignment: attempting to set auto-lock at due date ..."
+	#	at "\$due_date" <<< "rm \\"\$assignment_dir/$RM_ME\\""
 	fi
 _EOF_
 

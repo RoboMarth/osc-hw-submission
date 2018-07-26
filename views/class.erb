@@ -75,7 +75,7 @@
 		 use alphanumberic characters and underscores only</small>
 	</div>
 	<div class="form-group">
-		<label for="dateDue">Date due</label>
+		<label for="dateDue">Date due <small class="text-muted">(optional)</small></label>
 		<input class="form-control" id="dateDue" name="date_due" width="276">	
 		<script>
 			var yesterday = new Date();
@@ -86,10 +86,11 @@
 				format: 'yyyy-mm-dd'
 			});
 		</script>
-		<small class="form-text text-muted">Leave blank to have no due date</small>
+		<small class="form-text text-muted">All homework submitted after will be marked 'Late'; 
+		auto-lock not currently supported</small>
 	</div>
 	<div class="form-group">	
-		<label for="timeDue">Time due</label>
+		<label for="timeDue">Time due <small class="text-muted">(optional)</small></label>
 		<input class="form-control" id="timeDue" name="time_due" width="276" placeholder="hh:mm" value="00:00">
 		<script>
 			$('#timeDue').timepicker({
@@ -97,7 +98,7 @@
 				mode: '24hr'
 			});
 		</script>
-		<small class="form-text text-muted">24 hour format, ignored if 'Date due' is blank</small>
+		<small class="form-text text-muted">Time in 24 hour format; ignored if 'Date due' is blank</small>
 	</div>	
 	<input type="hidden" name="hw_dir" value="<%=@class_path%>">
 	<button type="submit" class="btn btn-primary float-right">Create assignment</button>
