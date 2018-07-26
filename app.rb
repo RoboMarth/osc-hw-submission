@@ -4,6 +4,7 @@ require 'date'
 require 'pathname'
 require 'etc'
 require 'fileutils'
+require 'filesize'
 
 enable :sessions # allow displaying of alerts after redirect
 use Rack::MethodOverride # enable delete route in old browsers
@@ -41,8 +42,21 @@ end
 SubmissionInfo = Struct.new(:submitter, :size, :date_submitted) do
 	def initialize (dir_path)
 		self[:submitter] = `getent passwd #{dir_path.basename.to_s} | cut -d ':' -f 5`
-		self[:size] = 0
+		self[:size] = Filesize.new(dir_size(dir_path)).pretty
+		#self[:size] = `du -sh #{dir_path}`.split.first # either way this is pretty slow for big files >500MB
 		self[:date_submitted] = dir_path.mtime
+	end
+	
+	def dir_size (dir_path)
+		dir_path.children.map{|c|	
+			unless c.symlink?
+				c.directory? ? dir_size(c) : c.size
+			else
+				0
+			end
+		}.inject {|sum, s| 
+			sum + s
+		}.to_i
 	end
 end
 

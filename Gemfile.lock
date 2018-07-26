@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    filesize (0.1.1)
     mustermann (1.0.2)
     rack (2.0.5)
     rack-protection (2.0.3)
@@ -16,4 +17,5 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  filesize
   sinatra
