@@ -171,7 +171,7 @@ post '/all/:project/:class/:assignment' do
 		lock_file_path = @assignment_path.join(ASSIGNMENT_OPEN_FILE)
 		if lock_file_path.exist?
 			lock_file_path.delete
-			redirect_back_with_msg("warning", "Assignment #{@assignment} has been locked and will not recieve any further submissions")
+			redirect_back_with_msg("danger", "Assignment #{@assignment} has been locked and will not recieve any further submissions")
 		else
 			File.new(lock_file_path.to_s, "w")
 			redirect_back_with_msg("success", "Assignment #{@assignment} has been unlocked and is open to submissions")

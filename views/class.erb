@@ -36,20 +36,20 @@
     				<a class="dropdown-item disabled" href="#">Download all submissions</a>
     				<a class="dropdown-item" target="_blank"
 						 href="https://ondemand.osc.edu/pun/sys/files/fs<%=a.path%>/">Open in file explorer</a>
-    				<a class="dropdown-item disabled" href="#">Rename</a>
     				<a class="dropdown-item disabled" href="#">Change date due</a>
 					<form class="form-inline" action="<%= url("/all/#{@project}/#{@class}/#{a.name}") %>" method="post">
 						<input type="hidden" name="modify_lock?" value"yes">
 						<button type="submit" class="btn btn-link dropdown-item">
 						<% if a.open? %>	
-    						Lock assignment
+    						<span class="text-danger">Lock assignment</span>
 						<% else %>
-    						Unlock assignment
+    						<span class="text-success">Unlock assignment</span>
 						<% end %>
 						</button>
 					</form>
+    				<a class="dropdown-item disabled" href="#">Rename assignment</a>
 					<div class="dropdown-divider"></div>
-					<button class="btn btn-danger dropdown-item text-danger" type="button" data-toggle="modal" data-target="#confirmDelete<%=a.name%>" aria-controls="addClass">Delete</button>
+					<button class="btn btn-danger dropdown-item text-danger font-weight-bold" type="button" data-toggle="modal" data-target="#confirmDelete<%=a.name%>" aria-controls="addClass">Delete assignment</button>
   			</div>
 		</div>	
 		</td>
