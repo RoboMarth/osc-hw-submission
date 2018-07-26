@@ -10,7 +10,7 @@
 			<th scope="col">Actions</th>
 		</thead></tr>
 		<tbody>
-		<% @table_rows.each do | a | %>
+		<% @assignment_infos.each do | a | %>
 		<tr>
 			<th scope="row" class="text-left"><h5><%= a.name %>
 				<span class="badge badge-light ml-2" data-toggle="tooltip" data-placement="top" 
@@ -56,7 +56,7 @@
 
 		</tr>	
 		<% end %>
-		<% if @table_rows.empty? %>
+		<% if @assignment_infos.empty? %>
 		<tr><td colspan="5" class="text-muted">no assignments yet, create one below</td></tr>
 		<% end %>
 		</tbody>
@@ -113,7 +113,7 @@
 	<div class="form-group">	
 		<label for="assignmentName">Assignment name</label>
 		<select class="form-control" id="assignmentName" name="assignment_name">
-		<% @table_rows.each do | a | %>
+		<% @assignment_infos.each do | a | %>
 			<option><%= a.name %></option>
 		<% end %>
 		</select>
@@ -146,7 +146,7 @@
 </div>
 </div>
 
-<% @table_rows.each do | a | %>
+<% @assignment_infos.each do | a | %>
 <div class="modal fade" id="confirmDelete<%=a.name%>" tabindex="-1" role="dialog" aria-labelledby="confirmDelete<%=a.name%>" aria-hidden="true">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">

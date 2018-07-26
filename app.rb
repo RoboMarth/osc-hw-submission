@@ -123,14 +123,14 @@ before '/all/:project/:class' do
 end
 
 get '/all/:project/:class' do
-	@table_rows = Array.new # paths to hw assignments (e.g. /fs/project/PZS0530/some_class/HW1)
+	@assignment_infos = Array.new 
 
 	Pathname.glob(@class_path + "*" + DATE_FILE) do | p |
 		assign_path = p.dirname	
-		@table_rows << AssignmentInfo.new(assign_path)
+		@assignment_infos << AssignmentInfo.new(assign_path)
 	end	
-	
-	@table_rows.sort_by!{|c| c.date_due.nil? ? c.date_created : c.date_due}.reverse!
+
+	@assignment_infos.sort_by!{|c| c.date_created}.reverse!
 
 	erb :class	
 end
@@ -153,13 +153,13 @@ end
 
 get '/all/:project/:class/:assignment' do
 	if @assignment_path.readable? # if user is the instructor
-		@table_rows = Array.new
+		@submission_infos = Array.new
 
 		@assignment_path.each_child do | p |
-			@table_rows << SubmissionInfo.new(p) if p.directory?
+			@submission_infos << SubmissionInfo.new(p) if p.directory?
 		end
 	
-		@table_rows.sort_by!{|s| s.submitter}.reverse!
+		@submission_infos.sort_by!{|s| s.submitter.downcase}
 
 		erb :assignment
 	end
