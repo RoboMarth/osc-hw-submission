@@ -1,0 +1,9 @@
+refactor code to use one Info object for the appropriate page (in addition to Info objects for children)
+add file size limit for submissions (correct for symlinks?)
+create download card in submissions page for different download options (download all, download only non-late, etc.)
+	also display info about total download size (progress bar? is that possible?)
+add anchors to card headers and link dropdowns items to them
+add page to track all submissions as they come in
+figure out how to add rename functionality
+create separate views for students and instructors
+add TA functionality via facl
