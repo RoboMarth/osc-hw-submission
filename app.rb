@@ -231,9 +231,6 @@ post '/submit/assignment' do
 	
 	redirect_back_with_msg("danger", "Homework not submitted: source directory not found") unless source_path.exist?
 	redirect_back_with_msg("danger", "Homework not submitted: no permission to read source") unless source_path.readable?
-
-	instructor = `stat -c '%U' #{hw_dir_path}`
-	submit_cmd = script_path.to_s, assignment_name.to_s, source_path.to_s
 	
 	dir = Dir.mktmpdir
 	
@@ -243,8 +240,17 @@ post '/submit/assignment' do
 		FileUtils.remove_entry dir
 		redirect_back_with_msg("danger", "Homework not submitted: could not copy all files from source")
 	end
-	
-	`setfacl -recursive -m u:#{instructor}:r #{dir}`
+
+	instructor = `stat -c '%U' #{hw_dir_path}`.chomp
+	setfacl_cmd = "/usr/bin/setfacl -R -m 'u:#{instructor}:r' #{dir}"
+	stdout, stderr, status = Open3.capture3(setfacl_cmd)
+
+	unless status.success?
+		FileUtils.remove_entry dir
+		redirect_back_with_msg("danger", "Failed to submit homeowrk: failed to set facl on the file system: #{stderr}")
+	end		
+
+	submit_cmd = script_path.to_s, assignment_name.to_s, source_path.to_s
 	stdout, stderr, status = Open3.capture3(*submit_cmd)
 	
 	FileUtils.remove_entry dir
