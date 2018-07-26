@@ -14,9 +14,9 @@
 		<% @submission_infos.each do | s | %>
 		<tr>
 			<th scope="row" class="text-left"><h5><%= s.submitter %></h5></th>
-			<td><%= s.size %></td>
+			<td><%= s.size.pretty %></td>
 			<td></td>
-			<td><%= s.date_submitted.strftime("%F") %></td>
+			<td><%= s.date_submitted.strftime('%F <span class="text-muted">at</span> %H:%M') %></td>
 			<td style="width:1%"><div class="btn-group dropdown">
 				<a role="button" class="btn btn-secondary btn-sm" href="#">
 					Download submission

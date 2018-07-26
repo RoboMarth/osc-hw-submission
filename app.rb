@@ -42,7 +42,7 @@ end
 SubmissionInfo = Struct.new(:submitter, :size, :date_submitted) do
 	def initialize (dir_path)
 		self[:submitter] = `getent passwd #{dir_path.basename.to_s} | cut -d ':' -f 5`
-		self[:size] = Filesize.new(dir_size(dir_path)).pretty
+		self[:size] = Filesize.new(dir_size(dir_path))
 		#self[:size] = `du -sh #{dir_path}`.split.first # either way this is pretty slow for big files >500MB
 		self[:date_submitted] = dir_path.mtime
 	end
