@@ -33,15 +33,15 @@
 			<li class="breadcrumb-item"><a href="https://ondemand.osc.edu/pun/sys/dashboard/apps/index">All Apps</a></li>
 			<li class="breadcrumb-item"><a href="<%= url("/") %>">Homework Submission</a></li>
 		<%# definitely a better way to this but I'm lazy %>
-		<% if @assignment %>	
+		<% if @assignment_info %>	
 			<li class="breadcrumb-item"><a href="<%= url("/all") %>">All Classes</a></li>
-			<li class="breadcrumb-item"><a href="<%= url("/all/#{@project}") %>"><%= @project %></a></li>
-			<li class="breadcrumb-item"><a href="<%= url("/all/#{@project}/#{@class}") %>"><%= @class %></a></li>
-			<li class="breadcrumb-item active"><%= @assignment %></li>
-		<% elsif @class %>	
+			<li class="breadcrumb-item"><a href="<%= url("/all/#{@assignment_info.project}") %>"><%= @assignment_info.project %></a></li>
+			<li class="breadcrumb-item"><a href="<%= url("/all/#{@assignment_info.project}/#{@assignment_info.class}") %>"><%= @assignment_info.class %></a></li>
+			<li class="breadcrumb-item active"><%= @assignment_info.name %></li>
+		<% elsif @class_info %>	
 			<li class="breadcrumb-item"><a href="<%= url("/all") %>">All Classes</a></li>
-			<li class="breadcrumb-item"><a href="<%= url("/all/#{@project}") %>"><%= @project %></a></li>
-			<li class="breadcrumb-item active"><%= @class %></li>
+			<li class="breadcrumb-item"><a href="<%= url("/all/#{@class_info.project}") %>"><%= @class_info.project %></a></li>
+			<li class="breadcrumb-item active"><%= @class_info.name %></li>
 		<% elsif @project %>
 			<li class="breadcrumb-item"><a href="<%= url("/all") %>">All Classes</a></li>
 			<li class="breadcrumb-item active"><%= @project %></li>
