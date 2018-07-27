@@ -95,13 +95,7 @@
 	</div>
 	<div class="form-group">	
 		<label for="timeDue">Time due <small class="text-muted">(optional)</small></label>
-		<input class="form-control" id="timeDue" name="time_due" width="276" placeholder="hh:mm" value="00:00">
-		<script>
-			$('#timeDue').timepicker({
-				uiLibrary: 'bootstrap4',
-				mode: '24hr'
-			});
-		</script>
+		<input class="form-control" id="timeDue" name="time_due" width="276" placeholder="hh:mm" value="00:00" style="width:276px">	
 		<small class="form-text text-muted">Time in 24 hour format; ignored if 'Date due' is blank</small>
 	</div>	
 	<input type="hidden" name="hw_dir" value="<%=@class_info.path%>">
@@ -179,7 +173,7 @@
 </div>
 
 <div class="modal fade" id="changeDateDue<%=a.name%>" tabindex="-1" role="dialog" aria-labelledby="changeDateDue<%=a.name%>" aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered" role="document">
+	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h4 class="modal-title" id="confirmDelete">Pick a new date and/or time</h4>
@@ -200,14 +194,7 @@
 			</div>
 			<div class="form-group">	
 				<label for="timeDue">Time due <small class="text-muted">(optional)</small></label>
-				<input class="form-control" id="timeDue<%=a.name%>" name="time_due" width="276" placeholder="hh:mm" value="00:00">
-				<script>
-					$('#timeDue<%=a.name%>').timepicker({
-						uiLibrary: 'bootstrap4',
-						mode: '24hr',
-						modal: false
-					});
-				</script>
+				<input class="form-control" id="timeDue<%=a.name%>" name="time_due" placeholder="hh:mm" value="00:00" style="width:276px">	
 				<small class="form-text text-muted">Time in 24 hour format; ignored if 'Date due' is blank</small>
 			</div>	
 			<input type="hidden" name="assignment_path" value="<%=a.path%>">
