@@ -27,10 +27,12 @@ ClassInfo = Struct.new(:path, :name, :project, :instructor, :assignments, :submi
 	end
 end
 
-AssignmentInfo = Struct.new(:path, :name, :open?, :submissions, :date_created, :date_due) do
+AssignmentInfo = Struct.new(:path, :name, :class, :project, :open?, :submissions, :date_created, :date_due) do
 	def initialize (dir_path)
 		self[:path] = dir_path
 		self[:name] = dir_path.basename.to_s
+		self[:class] = dir_path.dirname.basename.to_s
+		self[:project] = dir_path.dirname.dirname.basename.to_s
 		self[:submissions] = dir_path.children.select{|x| x.directory?}	
 		line1, line2 = IO.readlines((dir_path + DATE_FILE).to_s, chomp: true)
 		self[:date_created] = DateTime.parse(line1.split("Created: ").last)
@@ -128,21 +130,22 @@ get '/all/:project' do
 end
 
 before '/all/:project/:class' do
-	@project = params[:project]
-	@class = params[:class]
+	project = params[:project]
+	class_name = params[:class]
 
-	@class_path = Pathname.new(PROJECTS_DIR).join(@project).join(@class)
-	halt 404, "File or directory not found" unless @class_path.exist?
-	halt 403, "Permission denied" unless @class_path.readable?
-	halt 401, "Not a homework directory" unless (@class_path + IDENTIFICATION_FILE).exist?
+	class_path = Pathname.new(PROJECTS_DIR).join(project).join(class_name)
+	halt 404, "File or directory not found" unless class_path.exist?
+	halt 403, "Permission denied" unless class_path.readable?
+	halt 401, "Not a homework directory" unless (class_path + IDENTIFICATION_FILE).exist?
+
+	@class_info = ClassInfo.new(class_path)
 end
 
 get '/all/:project/:class' do
 	@assignment_infos = Array.new 
 
-	Pathname.glob(@class_path + "*" + DATE_FILE) do | p |
-		assign_path = p.dirname	
-		@assignment_infos << AssignmentInfo.new(assign_path)
+	@class_info.assignments.each do | a |
+		@assignment_infos << AssignmentInfo.new(a)
 	end	
 
 	@assignment_infos.sort_by!{|c| c.date_created}.reverse!
@@ -151,27 +154,29 @@ get '/all/:project/:class' do
 end
 
 delete '/all/:project/:class' do 
-	FileUtils.remove_entry_secure @class_path.to_s
-	session[:msgs] = Message.new("success", "Class removed: directory and contents at #{@class_path} were deleted")
+	FileUtils.remove_entry_secure @class_info.path.to_s
+	session[:msgs] = Message.new("success", "Class removed: directory and contents at #{@class_info.path} were deleted")
 	redirect to '/all'
 end
 
 before '/all/:project/:class/:assignment' do
-	@assignment = params[:assignment]
-	@project = params[:project]
-	@class = params[:class]
+	assignment = params[:assignment]
+	project = params[:project]
+	class_name = params[:class]
 
-	@assignment_path = Pathname.new(PROJECTS_DIR).join(@project).join(@class).join(@assignment)
-	halt 404, "File or directory not found" unless @assignment_path.exist?
-	halt 401, "Not in a homework directory" unless (@assignment_path.dirname + IDENTIFICATION_FILE).exist?
+	assignment_path = Pathname.new(PROJECTS_DIR).join(project).join(class_name).join(assignment)
+	halt 404, "File or directory not found" unless assignment_path.exist?
+	halt 401, "Not in a homework directory" unless (assignment_path.dirname + IDENTIFICATION_FILE).exist?
+
+	@assignment_info = AssignmentInfo.new(assignment_path)
 end
 
 get '/all/:project/:class/:assignment' do
-	if @assignment_path.readable? # if user is the instructor
+	if @assignment_info.path.readable? # if user is the instructor
 		@submission_infos = Array.new
 
-		@assignment_path.each_child do | p |
-			@submission_infos << SubmissionInfo.new(p) if p.directory?
+		@assignment_info.submissions.each do | s |
+			@submission_infos << SubmissionInfo.new(s)
 		end
 	
 		@submission_infos.sort_by!{|s| s.submitter.downcase}
@@ -183,22 +188,22 @@ end
 # for locking/unlocking assignments
 post '/all/:project/:class/:assignment' do
 	if params[:modify_lock?]	
-		lock_file_path = @assignment_path.join(ASSIGNMENT_OPEN_FILE)
+		lock_file_path = @assignment_info.path.join(ASSIGNMENT_OPEN_FILE)
 		if lock_file_path.exist?
 			lock_file_path.delete
-			redirect_back_with_msg("danger", "Assignment #{@assignment} has been locked and will not recieve any further submissions")
+			redirect_back_with_msg("danger", "Assignment #{@assignment_info.name} has been locked and will not recieve any further submissions")
 		else
 			File.new(lock_file_path.to_s, "w")
-			redirect_back_with_msg("success", "Assignment #{@assignment} has been unlocked and is open to submissions")
+			redirect_back_with_msg("success", "Assignment #{@assignment_info.name} has been unlocked and is open to submissions")
 		end
 	end
 	redirect back
 end
 
 delete '/all/:project/:class/:assignment' do
-	FileUtils.remove_entry_secure @assignment_path.to_s
-	session[:msgs] = Message.new("success", "Assignment removed: directory and contents at #{@assignment_path} were deleted")
-	redirect to "/all/#{@project}/#{@class}"
+	FileUtils.remove_entry_secure @assignment_info.path.to_s
+	session[:msgs] = Message.new("success", "Assignment removed: directory/contents at #{@assignment_info.path} were deleted")
+	redirect to "/all/#{@assignment_info.project}/#{@assignment_info.class}"
 end
 
 get '/download/*' do | glob |
