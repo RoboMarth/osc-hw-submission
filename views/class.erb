@@ -36,7 +36,7 @@
     				<a class="dropdown-item disabled" href="#">Download all submissions</a>
     				<a class="dropdown-item" target="_blank"
 						 href="https://ondemand.osc.edu/pun/sys/files/fs<%=a.path%>/">Open in file explorer</a>
-    				<a class="dropdown-item disabled" href="#">Change date due</a>
+					<button class="btn btn-danger dropdown-item" type="button" data-toggle="modal" data-target="#changeDateDue<%=a.name%>" aria-controls="#changeDateDue<%=a.name%>">Change due date</button>
 					<form class="form-inline" action="<%= url("/all/#{@class_info.project}/#{@class_info.name}/#{a.name}") %>" method="post">
 						<input type="hidden" name="modify_lock?" value"yes">
 						<button type="submit" class="btn btn-link dropdown-item">
@@ -49,7 +49,7 @@
 					</form>
     				<a class="dropdown-item disabled" href="#">Rename assignment</a>
 					<div class="dropdown-divider"></div>
-					<button class="btn btn-danger dropdown-item text-danger font-weight-bold" type="button" data-toggle="modal" data-target="#confirmDelete<%=a.name%>" aria-controls="addClass">Delete assignment</button>
+					<button class="btn btn-danger dropdown-item text-danger font-weight-bold" type="button" data-toggle="modal" data-target="#confirmDelete<%=a.name%>" aria-controls="#confirmDelete<%=a.name%>">Delete assignment</button>
   			</div>
 		</div>	
 		</td>
@@ -148,6 +148,7 @@
 </div>
 </div>
 
+<%# sorry this is super inefficient %>
 <% @assignment_infos.each do | a | %>
 <div class="modal fade" id="confirmDelete<%=a.name%>" tabindex="-1" role="dialog" aria-labelledby="confirmDelete<%=a.name%>" aria-hidden="true">
 	<div class="modal-dialog" role="document">
@@ -169,6 +170,49 @@
 					<button type="submit" class="btn btn-danger">Yes, delete <%=a.name%></button>
 				</form>
 			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="changeDateDue<%=a.name%>" tabindex="-1" role="dialog" aria-labelledby="changeDateDue<%=a.name%>" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="confirmDelete">Pick a new date and/or time</h4>
+			</div>
+			<form>
+			<div class="modal-body">
+			<div class="form-group">
+				<label for="dateDue">Date due <small class="text-muted">(optional)</small></label>
+				<input class="form-control" id="dateDue<%=a.name%>" name="date_due" width="276" <%="value=#{a.date_due.strftime("%F")}" unless a.date_due.nil? %>>	
+				<script>
+					$('#dateDue<%=a.name%>').datepicker({
+						uiLibrary: 'bootstrap4',
+						format: 'yyyy-mm-dd'
+					});
+				</script>
+				<small class="form-text text-muted">All homework submitted after will be marked 'Late'; 
+				auto-lock not currently supported; leave blank to have no date due</small>
+			</div>
+			<div class="form-group">	
+				<label for="timeDue">Time due <small class="text-muted">(optional)</small></label>
+				<input class="form-control" id="timeDue<%=a.name%>" name="time_due" width="276" placeholder="hh:mm" value="00:00">
+				<script>
+					$('#timeDue<%=a.name%>').timepicker({
+						uiLibrary: 'bootstrap4',
+						mode: '24hr',
+						modal: false
+					});
+				</script>
+				<small class="form-text text-muted">Time in 24 hour format; ignored if 'Date due' is blank</small>
+			</div>	
+			<input type="hidden" name="assignment_path" value="<%=a.path%>">
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+				<button type="submit" class="btn btn-primary float-right">Change date due</button>
+			</div>
+			</form>
 		</div>
 	</div>
 </div>
