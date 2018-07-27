@@ -41,13 +41,15 @@ AssignmentInfo = Struct.new(:path, :name, :class, :project, :open?, :submissions
 	end
 end
 
-SubmissionInfo = Struct.new(:path, :submitter, :size, :date_submitted) do
-	def initialize (dir_path)
+SubmissionInfo = Struct.new(:path, :submitter, :size, :date_submitted, :late?) do
+	def initialize (dir_path, assignment_info)
 		self[:path] = dir_path
 		self[:submitter] = `getent passwd #{dir_path.basename.to_s} | cut -d ':' -f 5`
 		self[:size] = Filesize.new(dir_size(dir_path))
 		#self[:size] = `du -sh #{dir_path}`.split.first # either way this is pretty slow for big files >500MB
 		self[:date_submitted] = dir_path.mtime
+		date_due = assignment_info.date_due
+		self[:late?] = date_due.nil? ? false : self[:date_submitted] > assignment_info.date_due.to_time
 	end
 	
 	def dir_size (dir_path)
@@ -176,7 +178,7 @@ get '/all/:project/:class/:assignment' do
 		@submission_infos = Array.new
 
 		@assignment_info.submissions.each do | s |
-			@submission_infos << SubmissionInfo.new(s)
+			@submission_infos << SubmissionInfo.new(s, @assignment_info)
 		end
 	
 		@submission_infos.sort_by!{|s| s.submitter.downcase}
