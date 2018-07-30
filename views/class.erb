@@ -7,7 +7,11 @@
 			<th scope="col">Status</th>
 			<th scope="col" class="d-lg-table-cell d-none">Date Created</th>
 			<th scope="col">Date Due</th>
+
+			<% if @id == ID::INSTRUCTOR %>
 			<th scope="col">Actions</th>
+			<% end %>
+
 		</thead></tr>
 		<tbody>
 		<% count = 0 %>
@@ -24,6 +28,8 @@
 			<td class="d-lg-table-cell d-none"><%= a.date_created.strftime("%F") %></td>
 			<td><%= a.date_due.nil? ? "<span class=\"text-muted\">none set</span>" : 
 					a.date_due.strftime('%F <span class="text-muted">at</span> %H:%M') %></td>
+
+			<% if @id == ID::INSTRUCTOR %>
 			<td style="width: 1%">
 			<div class="btn-group dropdown">
 				<a role="button" class="btn btn-secondary btn-sm" 
@@ -55,6 +61,8 @@
   				</div>
 				</div>	
 			</td>	
+			<% end %>
+
 		</tr>	
 		<% end %>
 		<% if @assignment_infos.empty? %>
@@ -68,6 +76,9 @@
 </div>
 </div>
 
+<%# =========================================================================================================================== %>
+
+<% if @id == ID::INSTRUCTOR %>
 <div class="card mt-4">
 <div class="card-body">
 <h3 class=card-title">Create new assignment <small class="text-muted"> directory for student submissions</small></h3>
@@ -101,48 +112,6 @@
 	<input type="hidden" name="hw_dir" value="<%=@class_info.path%>">
 	<button type="submit" class="btn btn-primary float-right">Create assignment</button>
 </form>
-</div>
-</div>
-
-<div class="card mt-4">
-<div class="card-body">
-<h3 class=card-title">Submit homework <small class="text-muted"> as a student</small></h3>
-<form action="<%= url('/submit/assignment') %>" method="post">
-	<div class="form-group">	
-		<label for="assignmentName">Assignment name</label>
-		<select class="form-control" id="assignmentName" name="assignment_name">
-		<% @assignment_infos.each do | a | %>
-			<option><%= a.name %></option>
-		<% end %>
-		</select>
-		<small class="form-text text-muted">Name of assignment directory to be submitted to from the table above</small>
-	</div>
-	<div class="form-group">
-		<label for="sourcePath">Source path</label>
-		<input type="text" class="form-control" id="sourcePath" name="source_path">		
-		<small class="form-text text-muted">Location on the <a href="https://ondemand.osc.edu/pun/sys/files/" target="_blank">file system</a> of the folder containing all the files 
-			you want to submit (see below for help)</small>
-	</div>
-	<input type="hidden" name="hw_dir" value="<%=@class_info.path%>">
-	<h5>Note:</h5>
-	<p>Any prior submission for the selected assignment will be overwritten by this one. Please make sure you are submitting to the correct assignment.</p>
-	<button type="submit" class="btn btn-primary float-right">Submit homework</button>
-</form>
-</div>
-</div>
-
-<div class="card mt-4">
-<div class="card-body">
-<h3 class="mb-4">Getting the source path <small class="text-muted">for submitting homework</small></h3>
-<p>Note: if your homework is not already on the system, you can upload it using File Explorer. Then, follow the steps below.</p>
-<ol>
-<li>Open <a href="https://ondemand.osc.edu/pun/sys/files/" target="_blank">File Explorer</a>.</li>
-<li>Navigate to the folder you want to submit (you may want to start by clicking 'Home Directory' in the top left).</li>
-<li>Double-click on that folder to open it.</li>
-<li>In the top-right group of buttons, click 'Go To...'.</li>
-<li>Copy the highlighted text.</li>
-<li>Paste into the form above under 'Source path'.</li> 
-</ol>
 </div>
 </div>
 
@@ -206,5 +175,52 @@
 			</form>
 		</div>
 	</div>
+</div>
+<% end %>
+<% end %>
+
+<%# =========================================================================================================================== %>
+
+<% if @id == ID::STUDENT %>
+<div class="card mt-4">
+<div class="card-body">
+<h3 class=card-title">Submit homework <small class="text-muted"> as a student</small></h3>
+<form action="<%= url('/submit/assignment') %>" method="post">
+	<div class="form-group">	
+		<label for="assignmentName">Assignment name</label>
+		<select class="form-control" id="assignmentName" name="assignment_name">
+		<% @assignment_infos.each do | a | %>
+			<option><%= a.name %></option>
+		<% end %>
+		</select>
+		<small class="form-text text-muted">Name of assignment directory to be submitted to from the table above</small>
+	</div>
+	<div class="form-group">
+		<label for="sourcePath">Source path</label>
+		<input type="text" class="form-control" id="sourcePath" name="source_path">		
+		<small class="form-text text-muted">Location on the <a href="https://ondemand.osc.edu/pun/sys/files/" target="_blank">file system</a> of the folder containing all the files 
+			you want to submit (see below for help)</small>
+	</div>
+	<input type="hidden" name="hw_dir" value="<%=@class_info.path%>">
+	<h5>Note:</h5>
+	<p>Any prior submission for the selected assignment will be overwritten by this one. Please make sure you are submitting to the correct assignment.</p>
+	<button type="submit" class="btn btn-primary float-right">Submit homework</button>
+</form>
+</div>
+</div>
+
+<div class="card mt-4">
+<div class="card-body">
+<h3 class="mb-4">Getting the source path <small class="text-muted">for submitting homework</small></h3>
+<p>Note: if your homework is not already on the system, you can upload it using File Explorer. Then, follow the steps below.</p>
+<ol>
+<li>Open <a href="https://ondemand.osc.edu/pun/sys/files/" target="_blank">File Explorer</a>.</li>
+<li>Navigate to the folder you want to submit (you may want to start by clicking 'Home Directory' in the top left).</li>
+<li>Double-click on that folder to open it.</li>
+<li>In the top-right group of buttons, click 'Go To...'.</li>
+<li>Copy the highlighted text.</li>
+<li>Paste into the form above under 'Source path'.</li> 
+</ol>
+</div>
 </div>
 <% end %>

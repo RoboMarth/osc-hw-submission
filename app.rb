@@ -65,6 +65,23 @@ SubmissionInfo = Struct.new(:path, :submitter, :size, :date_submitted, :late?) d
 	end
 end
 
+# Enums for possible identification states
+module ID
+	INSTRUCTOR = 0
+	TA = 1
+	STUDENT = 2
+
+	def ID.identify (hw_dir_path)	
+		if hw_dir_path.owned? 
+			INSTRUCTOR
+		elsif hw_dir_path.writable?
+			TA
+		else
+			STUDENT
+		end
+	end	
+end
+
 Message = Struct.new(:type, :text) # type corresponds to bootstrap theme colors: success, danger, warning, info
 
 helpers do
@@ -144,6 +161,10 @@ before '/all/:project/:class' do
 end
 
 get '/all/:project/:class' do
+	@id = ID.identify(@class_info.path)
+	@id = ID::STUDENT
+	@id = 2
+		
 	@assignment_infos = Array.new 
 
 	@class_info.assignments.each do | a |
@@ -168,23 +189,22 @@ before '/all/:project/:class/:assignment' do
 
 	assignment_path = Pathname.new(PROJECTS_DIR).join(project).join(class_name).join(assignment)
 	halt 404, "File or directory not found" unless assignment_path.exist?
+	halt 403, "Permission denied" unless assignment_path.executable? # if the folder can be opened
 	halt 401, "Not in a homework directory" unless (assignment_path.dirname + IDENTIFICATION_FILE).exist?
 
 	@assignment_info = AssignmentInfo.new(assignment_path)
 end
 
 get '/all/:project/:class/:assignment' do
-	if @assignment_info.path.readable? # if user is the instructor
-		@submission_infos = Array.new
+	@submission_infos = Array.new
 
-		@assignment_info.submissions.each do | s |
-			@submission_infos << SubmissionInfo.new(s, @assignment_info)
-		end
-	
-		@submission_infos.sort_by!{|s| s.submitter.downcase}
-
-		erb :assignment
+	@assignment_info.submissions.each do | s |
+		@submission_infos << SubmissionInfo.new(s, @assignment_info)
 	end
+	
+	@submission_infos.sort_by!{|s| s.submitter.downcase}
+
+	erb :assignment
 end
 
 # for locking/unlocking assignments
