@@ -5,6 +5,7 @@ require 'pathname'
 require 'etc'
 require 'fileutils'
 require 'filesize'
+require 'yaml'
 
 enable :sessions # allow displaying of alerts after redirect
 use Rack::MethodOverride # enable delete route in old browsers
@@ -12,7 +13,7 @@ use Rack::MethodOverride # enable delete route in old browsers
 IDENTIFICATION_FILE = "this_is_a_homework_directory" # file found in HW directories to identify them as such
 SCRIPTS_DIR = "scripts" # name of the scripts directory, found in each HW directory that holds all the assignment-related scripts
 PROJECTS_DIR = "/fs/project/" # directory contataining all project folders
-DATE_FILE = "meta_date_a" # file found in each assignment directory, contains creation and due dates, also serves as identification
+DATE_FILE = "meta_date_a.yaml" # file found in each assignment directory, contains creation and due dates, also serves as identification
 ASSIGNMENT_OPEN_FILE = "rm_me_to_lock_assignment" # file found in assignment directory if assignment is open for submission
 
 ClassInfo = Struct.new(:path, :name, :project, :instructor, :assignments, :submissions, :date_created) do
@@ -34,9 +35,9 @@ AssignmentInfo = Struct.new(:path, :name, :class, :project, :open?, :submissions
 		self[:class] = dir_path.dirname.basename.to_s
 		self[:project] = dir_path.dirname.dirname.basename.to_s
 		self[:submissions] = dir_path.children.select{|x| x.directory?}	
-		line1, line2 = IO.readlines((dir_path + DATE_FILE).to_s, chomp: true)
-		self[:date_created] = DateTime.parse(line1.split("Created: ").last)
-		self[:date_due] = DateTime.parse(line2.split("Due: ").last) rescue nil # if date is not valid
+		dates_hash = YAML.load(IO.read(dir_path + DATE_FILE))	
+		self[:date_created] = DateTime.parse(dates_hash[:created]) rescue nil
+		self[:date_due] = DateTime.parse(dates_hash[:due]) rescue nil # if date is not valid
 		self[:open?] = (dir_path + ASSIGNMENT_OPEN_FILE).exist? 
 	end
 end
@@ -162,8 +163,6 @@ end
 
 get '/all/:project/:class' do
 	@id = ID.identify(@class_info.path)
-	@id = ID::STUDENT
-	@id = 2
 		
 	@assignment_infos = Array.new 
 
@@ -207,7 +206,7 @@ get '/all/:project/:class/:assignment' do
 	erb :assignment
 end
 
-# for locking/unlocking assignments
+# for editing assignment config
 post '/all/:project/:class/:assignment' do
 	if params[:modify_lock?]	
 		lock_file_path = @assignment_info.path.join(ASSIGNMENT_OPEN_FILE)
@@ -217,6 +216,17 @@ post '/all/:project/:class/:assignment' do
 		else
 			File.new(lock_file_path.to_s, "w")
 			redirect_back_with_msg("success", "Assignment #{@assignment_info.name} has been unlocked and is open to submissions")
+		end
+	
+	elsif params[:modify_due?]
+		date_file_path = @assignment_info.path.join(DATE_FILE)
+		begin
+			date_hash = YAML.load(IO.read(date_file_path))
+			new_due_date = "#{params[:date_due]} #{params[:time_due]}" unless params[:date_due].empty?
+			date_hash[:due] = new_due_date
+			IO.write(date_file_path, date_hash.to_yaml)
+		rescue => e
+			redirect_back_with_msg("danger", "Could not modify due date: #{e.message}")
 		end
 	end
 	redirect back
