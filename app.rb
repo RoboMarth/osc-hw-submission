@@ -50,7 +50,7 @@ SubmissionInfo = Struct.new(:path, :submitter, :size, :date_submitted, :late?) d
 		#self[:size] = `du -sh #{dir_path}`.split.first # either way this is pretty slow for big files >500MB
 		self[:date_submitted] = dir_path.mtime
 		date_due = assignment_info.date_due
-		self[:late?] = date_due.nil? ? false : self[:date_submitted] > assignment_info.date_due.to_time
+		self[:late?] = date_due.nil? ? false : self[:date_submitted] > date_due.to_time
 	end
 	
 	def dir_size (dir_path)
@@ -200,10 +200,32 @@ get '/all/:project/:class/:assignment' do
 	@assignment_info.submissions.each do | s |
 		@submission_infos << SubmissionInfo.new(s, @assignment_info)
 	end
-	
-	@submission_infos.sort_by!{|s| s.submitter.downcase}
 
-	erb :assignment
+	if params[:download]
+		# relies on cron to cleanup tmp directory/file (trying to delete it here sends empty file)
+		mktemp_cmd = "mktemp --directory --tmpdir='/tmp' download.XXXXXX;"
+ 
+		stdout, stderr, status = Open3.capture3(mktemp_cmd);
+		halt 500, "could not create temporary file for downloading: #{stderr}" unless status.success?
+		tmp_dirpath = Pathname.new(stdout.chomp)
+		tmp_filepath = tmp_dirpath.join(@assignment_info.name).sub_ext(".zip")
+	
+		@submission_infos.reject!{ |s| s.late? } if params[:no_late]	
+		@submission_infos.select!{ |s| s.late? } if params[:only_late]
+		halt 401, "no submissions to download" if @submission_infos.empty?
+		file_list = @submission_infos.map{|s| s.path.basename.to_s}
+
+		zip_cmd = "/usr/bin/zip", "-r", tmp_filepath.to_s, *file_list
+		Dir.chdir(@assignment_info.path) do
+			stdout, stderr, status = Open3.capture3(*zip_cmd)
+			halt 500, "could not compress submissions for download: #{stderr}" unless status.success?
+		end
+
+		send_file tmp_filepath.to_s, :filename => tmp_filepath.basename.to_s	
+	else		
+		@submission_infos.sort_by!{|s| s.submitter.downcase}
+		erb :assignment
+	end
 end
 
 # for editing assignment config
