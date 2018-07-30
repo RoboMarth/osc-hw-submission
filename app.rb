@@ -1,6 +1,6 @@
 require 'sinatra'
 require 'open3'
-require 'date'
+require 'time'
 require 'pathname'
 require 'etc'
 require 'fileutils'
@@ -36,8 +36,8 @@ AssignmentInfo = Struct.new(:path, :name, :class, :project, :open?, :submissions
 		self[:project] = dir_path.dirname.dirname.basename.to_s
 		self[:submissions] = dir_path.children.select{|x| x.directory?}	
 		dates_hash = YAML.load(IO.read(dir_path + DATE_FILE))	
-		self[:date_created] = DateTime.parse(dates_hash[:created]) rescue nil
-		self[:date_due] = DateTime.parse(dates_hash[:due]) rescue nil # if date is not valid
+		self[:date_created] = Time.parse(dates_hash[:created]) rescue nil
+		self[:date_due] = Time.parse(dates_hash[:due]) rescue nil # if date is not valid
 		self[:open?] = (dir_path + ASSIGNMENT_OPEN_FILE).exist? 
 	end
 end
@@ -244,7 +244,7 @@ post '/all/:project/:class/:assignment' do
 		date_file_path = @assignment_info.path.join(DATE_FILE)
 		begin
 			date_hash = YAML.load(IO.read(date_file_path))
-			new_due_date = "#{params[:date_due]} #{params[:time_due]}" unless params[:date_due].empty?
+			new_due_date = Time.parse("#{params[:time_due]} #{params[:date_due]}").to_s unless params[:date_due].empty? rescue nil
 			date_hash[:due] = new_due_date
 			IO.write(date_file_path, date_hash.to_yaml)
 		rescue => e
@@ -359,7 +359,8 @@ post '/add/assignment' do
 	pn = Pathname.new(params[:hw_dir])
 	assignment_name = params[:assignment_name]
 	script_pn = pn.realpath.join("scripts").join("add_assignment")
-	date_due = params[:date_due] + " " + params[:time_due] unless params[:date_due].empty?
+
+	date_due = Time.parse("#{params[:time_due]} #{params[:date_due]}").to_s unless params[:date_due].empty? rescue nil
 
 	halt 404, "Parent directory not found" unless pn.exist?
 	halt 403, "Permission denied" unless pn.writable?

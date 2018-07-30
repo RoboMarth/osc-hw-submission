@@ -83,7 +83,7 @@ cat <<- _EOF_ > add_assignment
 	echo -e "to submit their homework for this assignment.\n"
 
 	if [ -n "\$due_date" ]; then
-		echo ":due: \$(date -d "\$due_date")" >> "\$assignment_dir/meta_date_a"
+		echo ":due: \$(date -d "\$due_date")" >> "\$assignment_dir/meta_date_a.yaml"
 	#	echo "add_assignment: attempting to set auto-lock at due date ..."
 	#	at "\$due_date" <<< "rm \\"\$assignment_dir/$RM_ME\\""
 	fi
