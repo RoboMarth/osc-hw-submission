@@ -7,3 +7,5 @@ add page to track all submissions as they come in
 figure out how to add rename functionality
 create separate views for students and instructors
 add TA functionality via facl
+change tables to scrollable tables (or just switch to using flex box and something)
+
