@@ -212,16 +212,20 @@ get '/all/:project/:class/:assignment' do
 	
 		@submission_infos.reject!{ |s| s.late? } if params[:no_late]	
 		@submission_infos.select!{ |s| s.late? } if params[:only_late]
-		halt 401, "no submissions to download" if @submission_infos.empty?
+		redirect_back_with_msg("warning", "Download failed: no submissions to download") if @submission_infos.empty?
 		file_list = @submission_infos.map{|s| s.path.basename.to_s}
 
 		zip_cmd = "/usr/bin/zip", "-r", tmp_filepath.to_s, *file_list
 		Dir.chdir(@assignment_info.path) do
 			stdout, stderr, status = Open3.capture3(*zip_cmd)
-			halt 500, "could not compress submissions for download: #{stderr}" unless status.success?
+			redirect_back_with_msg("danger", "Download failed: could not compress submissions for download") unless status.success?
 		end
 
-		send_file tmp_filepath.to_s, :filename => tmp_filepath.basename.to_s	
+		file_name = @assignment_info.name + "_submissions"
+		file_name += "_late" if params[:only_late]
+		file_name += "_all" unless params[:no_late] || params[:only_late]
+
+		send_file tmp_filepath.to_s, :filename => file_name
 	else		
 		@submission_infos.sort_by!{|s| s.submitter.downcase}
 		erb :assignment
