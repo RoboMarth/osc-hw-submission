@@ -46,6 +46,7 @@ SubmissionInfo = Struct.new(:path, :submitter, :size, :date_submitted, :late?) d
 	def initialize (dir_path, assignment_info)
 		self[:path] = dir_path
 		self[:submitter] = `getent passwd #{dir_path.basename.to_s} | cut -d ':' -f 5`
+		self[:submitter] = dir_path.basename.to_s if self[:submitter].empty?
 		self[:size] = Filesize.new(dir_size(dir_path))
 		#self[:size] = `du -sh #{dir_path}`.split.first # either way this is pretty slow for big files >500MB
 		self[:date_submitted] = dir_path.mtime
@@ -224,6 +225,7 @@ get '/all/:project/:class/:assignment' do
 		file_name = @assignment_info.name + "_submissions"
 		file_name += "_late" if params[:only_late]
 		file_name += "_all" unless params[:no_late] || params[:only_late]
+		file_name += ".zip"
 
 		send_file tmp_filepath.to_s, :filename => file_name
 	else		
