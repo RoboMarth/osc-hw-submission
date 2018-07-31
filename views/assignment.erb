@@ -2,7 +2,7 @@
 <div class="card-body table-responsive-xl">
 	<h3 class="card-title flex-grow-1">Submissions <small class="text-muted">for <%= @assignment_info.name %><small>
 		in <%= @assignment_info.class %></small></small></h3>
-	<table class="table table-hover text-center mt-3">
+	<table class="table table-sm table-hover text-center mt-3" id="submissionsTable">
 		<thead class="thead-dark"><tr>	
 			<th scope="col" class="text-left">Submitted By</th>
 			<th scope="col">Size</th>
@@ -52,9 +52,13 @@
 	<form class="form-inline">
 		<button type="submit" class="btn btn-primary m-1">On-time submissions only</button>
 		<input type="hidden" name="download">
-		<input type="hidden" name="no_late">
 	</form>	
 </div>
 </div>
 </div>
 
+<script>
+$(document).ready(function() {
+	$('#submissionsTable').DataTable();
+} );
+</script>
