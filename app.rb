@@ -118,7 +118,10 @@ get '/all' do
 		@project_paths << path if path.directory?
 	end
 		
-	@msgs << Message.new("danger", "user does have access to any project directories") if @project_paths.empty?
+	@msgs << Message.new("danger", "You do have access to any project spaces.\
+									Please contact OSC Help at \
+									<a href=\"mailto:oschelp@osc.edu?Subject=Classroom%20Project%20Space\">oschelp@osc.edu</a> \
+									for assistance.") if @project_paths.empty?
 
 	# look for hw directories in the project directories
 	@project_paths.each do | pp |
@@ -341,6 +344,7 @@ post '/submit/assignment' do
 end
 
 post '/add/class' do
+	redirect back if params[:parent_dir].nil? # case when user does not have access to project directories
 	pn = Pathname.new(params[:parent_dir])	
 	class_name = params[:class_name]
 	script_pn = Pathname.new(".").realpath.join("hw_dir_setup")
