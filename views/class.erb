@@ -8,7 +8,7 @@
 			<th scope="col" class="d-lg-table-cell d-none">Date Created</th>
 			<th scope="col">Date Due</th>
 
-			<% if @id == ID::INSTRUCTOR %>
+			<% if @id == ID::INSTRUCTOR || @id == ID::TA %>
 			<th scope="col">Actions</th>
 			<% end %>
 
@@ -29,7 +29,7 @@
 			<td><%= a.date_due.nil? ? "<span class=\"text-muted\">none set</span>" : 
 					a.date_due.strftime('%F <span class="text-muted">at</span> %H:%M') %></td>
 
-			<% if @id == ID::INSTRUCTOR %>
+			<% if @id == ID::INSTRUCTOR || @id == ID::TA %>
 			<td style="width: 1%">
 			<div class="btn-group dropdown">
 				<a role="button" class="btn btn-secondary btn-sm" 
@@ -78,7 +78,7 @@
 
 <%# =========================================================================================================================== %>
 
-<% if @id == ID::INSTRUCTOR %>
+<% if @id == ID::INSTRUCTOR || @id == ID::TA %>
 <div class="card mt-4">
 <div class="card-body">
 <h3 class=card-title">Create new assignment <small class="text-muted"> directory for student submissions</small></h3>
