@@ -83,7 +83,7 @@
 <%# =========================================================================================================================== %>
 
 <% if @id == ID::INSTRUCTOR || @id == ID::TA %>
-<div class="card mt-4">
+<div class="card mt-4" id="addAssignment">
 <div class="card-body">
 <h3 class=card-title">Create new assignment <small class="text-muted"> directory for student submissions</small></h3>
 <form action="<%= url('/add/assignment') %>" method="post">

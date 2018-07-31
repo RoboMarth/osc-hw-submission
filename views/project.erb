@@ -38,8 +38,7 @@
 				More
   			</button>
   			<div class="dropdown-menu">
-    			<a class="dropdown-item" href="<%= url("/all/#{c.project}") %>">Go to project page</a>
-    			<a class="dropdown-item disabled" href="#">Add assignment</a>
+    			<a class="dropdown-item" href="<%= url("/all/#{c.project}/#{c.name}#addAssignment") %>">Add assignment</a>
     			<a class="dropdown-item disabled" href="#">View all submissions</a>
     			<a class="dropdown-item" target="_blank"
 					 href="https://ondemand.osc.edu/pun/sys/files/fs<%=c.path%>/">Open in file explorer</a>
