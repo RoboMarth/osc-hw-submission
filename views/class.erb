@@ -181,7 +181,7 @@
 
 <%# =========================================================================================================================== %>
 
-<%# if @id == ID::STUDENT %>
+<% if @id == ID::STUDENT %>
 <div class="card mt-4">
 <div class="card-body">
 <h3 class=card-title">Submit homework <small class="text-muted"> as a student</small></h3>
@@ -189,11 +189,11 @@
 	<div class="form-group">	
 		<label for="assignmentName">Assignment name</label>
 		<select class="form-control" id="assignmentName" name="assignment_name">
-		<% @assignment_infos.each do | a | %>
+		<% @assignment_infos.select{|x| x.open?}.each do | a | %>
 			<option><%= a.name %></option>
 		<% end %>
 		</select>
-		<small class="form-text text-muted">Name of assignment directory to be submitted to from the table above</small>
+		<small class="form-text text-muted">Name of assignment directory to be submitted to from the table above (assignment must be Open)</small>
 	</div>
 	<div class="form-group">
 		<label for="sourcePath">Source path</label>
@@ -223,4 +223,4 @@
 </ol>
 </div>
 </div>
-<%# end %>
+<% end %>
