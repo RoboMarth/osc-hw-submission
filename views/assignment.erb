@@ -1,9 +1,9 @@
 <div class="card mt-3">
 <div class="card-body table-responsive-xl">
-	<h3 class="card-title flex-grow-1">Submissions <small class="text-muted">for <%= @assignment_info.name %><small>
-		in <%= @assignment_info.class %></small></small></h3>
-	<table class="table table-sm table-hover text-center mt-3" id="submissionsTable">
-		<thead class="thead-dark"><tr>	
+	<h3 class="card-title flex-grow-1">Submissions <small class="text-muted">for <%= @assignment_info.name %>
+		in <%= @assignment_info.class %></small></h3>
+	<table class="table table-hover text-center mt-3" id="submissionsTable">
+		<thead><tr>	
 			<th scope="col" class="text-left">Submitted By</th>
 			<th scope="col">Size</th>
 			<th scope="col">Late?</th>
@@ -13,7 +13,7 @@
 		<tbody>
 		<% @submission_infos.each do | s | %>
 		<tr>
-			<th scope="row" class="text-left"><h5><%= s.submitter %></h5></th>
+			<th scope="row" class="text-left"><%= s.submitter %></th>
 			<td><%= s.size.pretty %></td>
 			<td><%= s.late? ? '<span class="text-danger">yes</span>' : '<span class="text-success">no</span>' %></td>
 			<td><%= s.date_submitted.strftime('%F <span class="text-muted">at</span> %H:%M') %></td>
@@ -25,9 +25,6 @@
   			</div></td>
 		</tr>	
 		<% end %>
-		<% if @submission_infos.empty? %>
-		<tr><td colspan="5"><h5 class="mt-3 mb-4 text-muted font-weight-normal">no submissions yet</h5></td></tr>
-		<% end %>
 		</tbody>
 	</table>
 </div>
@@ -35,7 +32,7 @@
 
 <div class="card mt-4">
 <div class="card-body">
-<h3 class=card-title">Bulk download <small class="text-muted">submissions for this assignment</small></h3>
+<h3 class=card-title">Bulk download <small class="text-muted">submissions for <%= @assignment_info.name %></small></h3>
 <hr>
 <div class="d-flex flex-wrap justify-content-end">
 	<form class="form-inline">
@@ -59,6 +56,12 @@
 
 <script>
 $(document).ready(function() {
-	$('#submissionsTable').DataTable();
+	$('#submissionsTable').DataTable( {
+		"pageLength" : 5,
+		"lengthMenu" : [[5, 10, 25, -1], [5, 10, 25, "All"]],
+		"language": {
+			"emptyTable": "no submissions yet"
+		}
+    } );
 } );
 </script>
