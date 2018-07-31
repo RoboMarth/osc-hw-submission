@@ -10,6 +10,8 @@
 
 			<% if @id == ID::INSTRUCTOR || @id == ID::TA %>
 			<th scope="col">Actions</th>
+			<% elsif @id == ID::STUDENT %>	
+			<th scope="col">Submitted?</th>
 			<% end %>
 
 		</thead></tr>
@@ -61,6 +63,8 @@
   				</div>
 				</div>	
 			</td>	
+			<% elsif @id == ID::STUDENT %>
+			<td><%= a.submitted? ? '<span class="text-success">Yes</span>' : '<span class="text-danger">No</span>' %></td>
 			<% end %>
 
 		</tr>	

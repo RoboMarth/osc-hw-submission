@@ -28,7 +28,7 @@ ClassInfo = Struct.new(:path, :name, :project, :instructor, :assignments, :submi
 	end
 end
 
-AssignmentInfo = Struct.new(:path, :name, :class, :project, :open?, :submissions, :date_created, :date_due) do
+AssignmentInfo = Struct.new(:path, :name, :class, :project, :open?, :submissions, :date_created, :date_due, :submitted?) do
 	def initialize (dir_path)
 		self[:path] = dir_path
 		self[:name] = dir_path.basename.to_s
@@ -39,6 +39,7 @@ AssignmentInfo = Struct.new(:path, :name, :class, :project, :open?, :submissions
 		self[:date_created] = Time.parse(dates_hash[:created]) rescue nil
 		self[:date_due] = Time.parse(dates_hash[:due]) rescue nil # if date is not valid
 		self[:open?] = (dir_path + ASSIGNMENT_OPEN_FILE).exist? 
+		self[:submitted?] = (dir_path + `whoami`.chomp).directory?
 	end
 end
 
