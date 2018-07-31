@@ -229,7 +229,7 @@ get '/all/:project/:class/:assignment' do
 
 		file_name = @assignment_info.name + "_submissions"
 		file_name += "_late" if params[:only_late]
-		file_name += "_all" unless params[:no_late] || params[:only_late]
+		file_name += "_all" unless (params[:no_late] || params[:only_late])
 		file_name += ".zip"
 
 		send_file tmp_filepath.to_s, :filename => file_name
