@@ -165,6 +165,7 @@ end
 
 get '/all/:project/:class' do
 	@id = ID.identify(@class_info.path)
+	@id = ID::STUDENT if params[:student]
 		
 	@assignment_infos = Array.new 
 
