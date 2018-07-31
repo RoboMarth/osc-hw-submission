@@ -26,6 +26,8 @@
 		<td class="d-lg-table-cell d-none"><%= c.instructor %></td>
 		<td class="d-lg-table-cell d-none"><%= c.date_created.strftime("%F") %></td>
 		<td style="width: 1%">
+		
+		<% if [ID::INSTRUCTOR, ID::TA].include? ID.identify(c.path) %>
 		<div class="btn-group dropdown">
 			<a role="button" class="btn btn-secondary btn-sm" 
 				href="<%= url("/all/#{c.project}/#{c.name}") %>">
@@ -46,11 +48,18 @@
 				<button class="btn btn-danger dropdown-item text-danger font-weight-bold" type="button" data-toggle="modal" data-target="#confirmDelete<%=c.name%>" aria-controls="addClass">Delete class</button>
   			</div>
 		</div>	
+		<% else %>
+			<a role="button" class="btn btn-secondary btn-sm" 
+				href="<%= url("/all/#{c.project}/#{c.name}") %>">
+				View assignments
+			</a>
+		<% end %>
+
 		</td>
 	</tr>
 	<% end %>
 	<% if @class_infos.empty? %>
-		<tr><td colspan="5"><h5 class="mt-3 mb-4 text-muted font-weight-normal">no classes yet, create one below</h5></td></tr>
+		<tr><td colspan="5"><h5 class="mt-3 mb-4 text-muted font-weight-normal">no classes yet</h5></td></tr>
 	<% end %>
 	</tbody>
 </table>
