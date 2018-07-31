@@ -1,6 +1,9 @@
 html {
 	position: relative;
 	min-height: 100%;
+	/* make scrollbar always visible to prevent stutters when switching page */
+	overflow: -moz-scrollbars-vertical;
+	overflow-y: scroll;
 }
 body {
 	margin-bottom: 140px; /* Margin bottom by footer height */
