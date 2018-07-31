@@ -43,7 +43,10 @@
 					More
   				</button>
   				<div class="dropdown-menu">
-    				<a class="dropdown-item disabled" href="#">Download all submissions</a>
+					<% if a.submissions.count > 0 %>
+	    				<a class="dropdown-item" href="<%= url("/all/#{@class_info.project}/#{@class_info.name}/#{a.name}#download") %>">Download submissions</a>
+					<% end %>
+
     				<a class="dropdown-item" target="_blank"
 						 href="https://ondemand.osc.edu/pun/sys/files/fs<%=a.path%>/">Open in file explorer</a>
 					<button class="btn btn-danger dropdown-item" type="button" data-toggle="modal" data-target="#changeDateDue<%=a.name%>" aria-controls="#changeDateDue<%=a.name%>">Change due date</button>
