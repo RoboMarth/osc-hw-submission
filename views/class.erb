@@ -88,7 +88,7 @@
 <% if @id == ID::INSTRUCTOR || @id == ID::TA %>
 <div class="card mt-4" id="addAssignment">
 <div class="card-body">
-<h3 class=card-title">Create new assignment <small class="text-muted"> directory for student submissions</small></h3>
+<h3 class="card-title">Create new assignment <small class="text-muted"> directory for student submissions</small></h3>
 <form action="<%= url('/add/assignment') %>" method="post">
 	<div class="form-group">	
 		<label for="assignmentName">Assignment name</label>
@@ -191,7 +191,7 @@
 <% if @id == ID::STUDENT %>
 <div class="card mt-4">
 <div class="card-body">
-<h3 class=card-title">Submit homework <small class="text-muted"> as a student</small></h3>
+<h3 class="card-title">Submit homework <small class="text-muted"> as a student</small></h3>
 <form action="<%= url('/submit/assignment') %>" method="post">
 	<div class="form-group">	
 		<label for="assignmentName">Assignment name</label>
