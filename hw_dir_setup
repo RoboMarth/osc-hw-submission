@@ -237,7 +237,7 @@ cat <<- _EOF_ > submit_hw_copy_wrapper.c
 		pwd = getpwuid(id);
 		if (pwd)
 		{
-			execl("/bin/bash", "bash", "-p", "$hw_dir/scripts/submit_hw_copy", pwd->pw_name, hw, src, (char *) NULL);
+			execl("/bin/bash", "bash", "-p", "--", "$hw_dir/scripts/submit_hw_copy", pwd->pw_name, hw, src, (char *) NULL);
 			/* Will only proceed if execl fails */
 			perror("$PREFIX2 homework not submitted: Function execl() in wrapper failed");
 			return 1;
