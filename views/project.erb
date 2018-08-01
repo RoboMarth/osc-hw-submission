@@ -27,7 +27,7 @@
 		<td class="d-lg-table-cell d-none"><%= c.date_created.strftime("%F") %></td>
 		<td style="width: 1%">
 
-		<% if [ID::INSTRUCTOR, ID::TA].include? ID.identify(c.path) %>
+		<% if [ID::INSTRUCTOR, ID::TA].include? ID.identify(c.path) || c.path.dirname.owned? %>
 		<div class="btn-group dropdown">
 			<a role="button" class="btn btn-secondary btn-sm" 
 				href="<%= url("/all/#{c.project}/#{c.name}") %>">
