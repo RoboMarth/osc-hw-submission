@@ -24,5 +24,5 @@ for more details.
 Login into OSC OnDemand. There should be an option `Develop` in the top navbar
 that appeared because of the creation of the folder in Step 1. 
 
-Select `Develop > My Sandbox Apps (Development) > Launch Homework
-Submission` to preview the app as an instructor.
+Select `Develop > My Sandbox Apps (Development) > Details > Bundle Install >
+Launch Homework Submission` to preview the app as an instructor.
