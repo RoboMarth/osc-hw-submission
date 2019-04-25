@@ -30,4 +30,4 @@ Launch Homework Submission` to preview the app as an instructor.
 To preview any page as a student (by default the app recognizes you as an
 instructor because you created the homework directory), suffix `?student=` to
 the end of the url, eg.
-<https://ondemand.osc.edu/pun/dev/osc-hw-submission/all/PZS0530/Test_HW_Directory2?student=>
+<https://ondemand.osc.edu/pun/dev/osc-hw-submission/all/PZS0530/Test_HW_Directory2?student=>.
